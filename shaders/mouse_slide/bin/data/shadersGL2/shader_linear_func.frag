@@ -40,6 +40,8 @@ void main() {
     // Turn on only the x points we want...
     // pct = pct * (smoothstep(0.5,0.8, st.x) - smoothstep(0.8,0.802, st.x) );
 
+    pct = pct * (step(0.5, st.x) - step(0.8, st.x));
+
     // float pct = plot2(st, new_x);
     // color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
     
