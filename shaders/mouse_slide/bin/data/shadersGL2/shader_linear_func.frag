@@ -35,7 +35,8 @@ void main() {
 
     float new_x = smoothstep(0.5,1.0, st.x);
     // Plot a line
-    float pct = plot2(st, 0.52);
+    // float pct = plot2(st, 0.52);
+    float pct = plot2(st, new_x);
 
     // Turn on only the x points we want...
     // pct = pct * (smoothstep(0.5,0.8, st.x) - smoothstep(0.8,0.802, st.x) );
