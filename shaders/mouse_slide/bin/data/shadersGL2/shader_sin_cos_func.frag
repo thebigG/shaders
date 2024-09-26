@@ -22,7 +22,7 @@ float plot(vec2 st) {
 }
 
 float plot2(vec2 st, float point) {    
-    return smoothstep(point-0.02, point, abs(st.y)) - smoothstep(point, point+0.02, abs(st.y)) ;
+    return smoothstep(point-0.02, point, st.y) - smoothstep(point, point+0.02, st.y) ;
 }
 
 
@@ -33,17 +33,21 @@ void main() {
 
     float y = st.x;
 
+    float x = st.x;
+
     vec3 color = vec3(y);
 
     float new_x = smoothstep(0.5,1.0, st.x);
     // Plot a line
     float pct = plot2(st, 0.52);
 
-    y = pow(st.x,0.50);
-    // y = log(st.x);
-    // y = sqrt(PI);
+    y = sin(st.x * PI*4.0 * u_time);
+
+    // y = ceil(x * u_time);
 
     pct = plot2(st, y);
+
+    // pct = y;
 
 
     // Turn on only the x points we want...
