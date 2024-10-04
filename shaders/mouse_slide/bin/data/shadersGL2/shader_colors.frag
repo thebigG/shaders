@@ -203,14 +203,6 @@ float backInOut(float t) {
 }
 
 
-
-
-
-
-
-
-
-
 void main() {
 	vec2 st = gl_FragCoord.xy/u_resolution;
 
@@ -226,5 +218,13 @@ void main() {
     // Making Green
     green.rgb = yellow.bgb; // Assign the blue channel of Yellow (0) to red and blue channels
 
-	gl_FragColor = vec4(yellow,1.0);
+	// gl_FragColor = sineInOut(u_time) * vec4(yellow,1.0);
+
+    // gl_FragColor = circularInOut(u_time) * vec4(yellow,1.0);
+
+    // gl_FragColor = vec4(green,1.0);
+
+    gl_FragColor = mix(vec4(green,1.0), vec4(yellow,1.0), sineInOut(u_time));
+
+    // qinticOut
 }
