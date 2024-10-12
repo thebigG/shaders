@@ -37,7 +37,20 @@ void main(){
 
     // We map x (0.0 - 1.0) to the hue (0.0 - 1.0)
     // And the y (0.0 - 1.0) to the brightness
-    color = hsb2rgb(vec3(st.x,1.0,st.y));
 
-    gl_FragColor = vec4(color,1.0);
+    // vec3 result =  mod(st.x*6.0+vec3(0.0,4.0,2.0),
+    //                          6.0);
+
+    float result =  mod(st.x, 0.5);
+
+    float result_float = mod(u_time, 6.0);
+    // result = result_float;
+    // color = hsb2rgb(vec3(st.x,1.0,st.y));
+
+    color = vec3(1.0,0.0,0.0);
+
+    // gl_FragColor = vec4(result,1.0);
+    // gl_FragColor = vec4(color * result_float,1.0);
+
+    gl_FragColor = vec4(color * result  ,1.0);
 }
