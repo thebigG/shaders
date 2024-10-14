@@ -24,7 +24,7 @@ vec3 rgb2hsb( in vec3 c ){
 //  https://www.shadertoy.com/view/MsS3Wc
 vec3 hsb2rgb( in vec3 c ){
     vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
-                             6.0)-3.0)-1.0,
+                             6.0) -3.0)-1.0,
                      0.0,
                      1.0 );
     rgb = rgb*rgb*(3.0-2.0*rgb);
@@ -38,19 +38,38 @@ void main(){
     // We map x (0.0 - 1.0) to the hue (0.0 - 1.0)
     // And the y (0.0 - 1.0) to the brightness
 
-    // vec3 result =  mod(st.x*6.0+vec3(0.0,4.0,2.0),
+    // vec3 result =  mod((st.x*6.0)+(vec3(0.0,4.0,2.0)),
     //                          6.0);
 
-    float result =  mod(st.x, 0.5);
+    // vec3 result =  mod((st.x*6.0)+(vec3(1.0,5.0,2.0)),
+                            //  6.0);
+
+
+    // float result =  mod(st.x*6.0, 6.0);
+
+    vec3 result =  mod((st.x*6.0) + vec3(0.5,1.0,0.0), 6.0);
+
+    // Same as what is above
+
+    float result_r =  mod((st.x*6.0) + 0.5, 6.0);
+    float result_g =  mod((st.x*6.0) + 0.0, 6.0);
+    float result_b =  mod((st.x*6.0) + 0.0, 6.0);
+
+    vec3 result_rgb  = vec3(result_r,result_g, result_b);
+    // float result =  mod(st.x*1.0, 1.0);
 
     float result_float = mod(u_time, 6.0);
     // result = result_float;
     // color = hsb2rgb(vec3(st.x,1.0,st.y));
 
-    color = vec3(1.0,0.0,0.0);
+    color = vec3(0.2,1.0,1.0);
 
-    // gl_FragColor = vec4(result,1.0);
+    result = result_rgb;
+
+    result = color;
+
+    gl_FragColor = vec4(result,1.0);
     // gl_FragColor = vec4(color * result_float,1.0);
 
-    gl_FragColor = vec4(color * result  ,1.0);
+    // gl_FragColor = vec4(color * result  ,1.0);
 }
