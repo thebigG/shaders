@@ -51,22 +51,33 @@ void main(){
 
     // Same as what is above
 
-    float result_r =  mod((st.x*6.0) + 0.5, 6.0);
-    float result_g =  mod((st.x*6.0) + 0.0, 6.0);
-    float result_b =  mod((st.x*6.0) + 0.0, 6.0);
+    // float result_r =  abs(mod((st.x*6.0) + 1.5, 6.0) - 3.00);
+    // float result_g =  abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00);
+    // float result_b =  abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00);
+
+    float result_r =  clamp(abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00), 0.0, 1.0);
+    float result_g =  clamp(abs(mod((st.x*6.0) + 4.0, 6.0) - 3.00), 0.0, 1.0);
+    float result_b =  clamp( abs(mod((st.x*6.0) + 2.0, 6.0) - 3.00), 0.0, 1.0);
+
+
+    // float result_r =  (mod((st.x*6.0) + 1.5, 6.0) - 3.00);
+    // float result_g =  (mod((st.x*6.0) + 0.0, 6.0) - 3.00);
+    // float result_b =  (mod((st.x*6.0) + 0.0, 6.0) - 3.00);
 
     vec3 result_rgb  = vec3(result_r,result_g, result_b);
+
+    // result_rgb = result_rgb * result_rgb * (3.0-2.0*result_rgb);
     // float result =  mod(st.x*1.0, 1.0);
 
     float result_float = mod(u_time, 6.0);
     // result = result_float;
     // color = hsb2rgb(vec3(st.x,1.0,st.y));
 
-    color = vec3(0.2,1.0,1.0);
+    color = vec3(0.0,1.0,1.0);
 
     result = result_rgb;
 
-    result = color;
+    // result = color;
 
     gl_FragColor = vec4(result,1.0);
     // gl_FragColor = vec4(color * result_float,1.0);
