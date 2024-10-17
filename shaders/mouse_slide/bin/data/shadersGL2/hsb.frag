@@ -55,9 +55,14 @@ void main(){
     // float result_g =  abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00);
     // float result_b =  abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00);
 
-    float result_r =  clamp(abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00), 0.0, 1.0);
-    float result_g =  clamp(abs(mod((st.x*6.0) + 4.0, 6.0) - 3.00), 0.0, 1.0);
-    float result_b =  clamp( abs(mod((st.x*6.0) + 2.0, 6.0) - 3.00), 0.0, 1.0);
+    // float result_r =  clamp(abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00)-1.00, 0.0, 1.0);
+    // float result_g =  clamp(abs(mod((st.x*6.0) + 4.0, 6.0) - 3.00)-1.00, 0.0, 1.0);
+    // float result_b =  clamp(abs(mod((st.x*6.0) + 2.0, 6.0) - 3.00)-1.00, 0.0, 1.0);
+
+
+    float result_r =  clamp(abs(mod((st.x*6.0) + 0.0, 6.0) - 3.00)-1.00, 0.0, 1.0);
+    float result_g =  clamp(abs(mod((st.x*6.0) + 4.0, 6.0) - 3.00)-1.0, 0.0, 1.0);
+    float result_b =  clamp(abs(mod((st.x*6.0) + 2.0, 6.0) - 3.00)-1.00, 0.0, 1.0);
 
 
     // float result_r =  (mod((st.x*6.0) + 1.5, 6.0) - 3.00);
@@ -74,6 +79,8 @@ void main(){
     // color = hsb2rgb(vec3(st.x,1.0,st.y));
 
     color = vec3(0.0,1.0,1.0);
+
+    // result_rgb = st.y * mix(vec3(1.0), result_rgb, 1.0);
 
     result = result_rgb;
 
