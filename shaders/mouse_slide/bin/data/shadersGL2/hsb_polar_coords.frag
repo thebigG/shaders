@@ -9,6 +9,13 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
 
+//Very useful to "select" a specific color range from the hsb "pie"
+// Select points from point to range
+float select_from_range(in float point, in float range, in float input_edge)
+{
+    return step(point, input_edge) - step(point+range, input_edge);
+}
+
 //  Function from Iñigo Quiles
 //  https://www.shadertoy.com/view/MsS3Wc
 vec3 hsb2rgb( in vec3 c ){
@@ -20,10 +27,7 @@ vec3 hsb2rgb( in vec3 c ){
     return c.z * mix( vec3(1.0), rgb, c.y);
 }
 
-float plot2(vec2 st, float point) {    
-    return smoothstep(point-0.02, point, abs(st.y)) - smoothstep(point, point+0.02, abs(st.y)) ;
-}
-
+// https://thebookofshaders.com/05/
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution;
     vec3 color = vec3(0.0);
@@ -33,22 +37,26 @@ void main(){
     float angle = atan(toCenter.y,toCenter.x);
     float radius = length(toCenter)*2.0;
 
-    float pct = plot2(st, 0.75);
-
+    
     // Map the angle (-PI to PI) to the Hue (from 0 to 1)
     // and the Saturation to the radius
     // color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
 
-    // float new_angle = clamp(angle, PI*-1.00,PI/4.00);
     float new_angle = angle;
-    // float new_angle = PI*-0.50;
+    float angle_x = (new_angle/TWO_PI)+0.5;
 
-    float radius_multiplier = smoothstep(-PI, PI/3.00 + 0.02, new_angle);
-    // float radius_multiplier = step(PI/2.00, new_angle);
-    float angle_x = (new_angle/TWO_PI);
-    // float angle_x = (1.5/TWO_PI);
+    // smoothstep(point-0.02, point, angle_x) - smoothstep(point, point+0.02, abs(st)) ;
+
+    float radius_multiplier = 0.00;
+
+    // radius_multiplier = step(point, angle_x) - step(point+range, angle_x);
+
+    // radius_multiplier = step(point, angle_x) - step(point+range, angle_x);
+
+    radius_multiplier = select_from_range(0.00, 0.15, angle_x);
 
     color = hsb2rgb(vec3(angle_x, radius * radius_multiplier,1.0)) ;
+    // color = hsb2rgb(vec3(0.00, radius,1.0)) ;
     // color = hsb2rgb(vec3((angle/TWO_PI),radius,1.0));
     // color = hsb2rgb(vec3((angle/TWO_PI)+.25,radius,1.0));
     // color = hsb2rgb(vec3((angle/TWO_PI)+abs(sin(u_time)),radius,1.0));
