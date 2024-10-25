@@ -6,6 +6,8 @@ precision mediump float;
 
 #define PI 3.14159265359
 
+#define ONE_DEGREE 0.002777778
+
 uniform vec2 u_resolution;
 uniform float u_time;
 
@@ -27,6 +29,11 @@ vec3 hsb2rgb( in vec3 c ){
     return c.z * mix( vec3(1.0), rgb, c.y);
 }
 
+float degrees_to_scalar(in float angle)
+{
+    return ONE_DEGREE * angle;
+}
+
 // https://thebookofshaders.com/05/
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution;
@@ -44,23 +51,37 @@ void main(){
 
     float new_angle = angle;
     float angle_x = (new_angle/TWO_PI)+0.5;
+    // float angle_x = (new_angle/TWO_PI);
 
     // smoothstep(point-0.02, point, angle_x) - smoothstep(point, point+0.02, abs(st)) ;
 
     float radius_multiplier = 0.00;
 
-    // radius_multiplier = step(point, angle_x) - step(point+range, angle_x);
+    // Move to a function
 
-    // radius_multiplier = step(point, angle_x) - step(point+range, angle_x);
+    radius_multiplier = select_from_range(degrees_to_scalar(0.00), degrees_to_scalar(45.00), angle_x);
+    // radius_multiplier = 1.00;
 
-    radius_multiplier = select_from_range(0.00, 0.15, angle_x);
+    // color = hsb2rgb(vec3(angle_x, radius * radius_multiplier,1.0)) ;
 
-    color = hsb2rgb(vec3(angle_x, radius * radius_multiplier,1.0)) ;
+    if(radius_multiplier == 1.00)
+    {
+        color = hsb2rgb(vec3(0.45, radius ,1.0)) ;
+    }
+
+    else
+    {
+        color = hsb2rgb(vec3(angle_x, radius ,1.0)) ;
+    }
+    
+
     // color = hsb2rgb(vec3(0.00, radius,1.0)) ;
     // color = hsb2rgb(vec3((angle/TWO_PI),radius,1.0));
     // color = hsb2rgb(vec3((angle/TWO_PI)+.25,radius,1.0));
     // color = hsb2rgb(vec3((angle/TWO_PI)+abs(sin(u_time)),radius,1.0));
-    // color = hsb2rgb(vec3((angle/TWO_PI)+abs(u_time),radius,1.0));
+    // color = hsb2rgb(vec3((PI/TWO_PI)+abs(u_time),radius,1.0));
+
+    // color = hsb2rgb(vec3((PI* 1.50/TWO_PI) + 0.5,radius,1.0));
 
     // color = step(vec3(0.15), color);
 
