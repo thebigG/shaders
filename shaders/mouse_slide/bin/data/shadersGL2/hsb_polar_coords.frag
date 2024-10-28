@@ -18,6 +18,15 @@ float select_from_range(in float point, in float range, in float input_edge)
     return step(point, input_edge) - step(point+range, input_edge);
 }
 
+
+//Very useful to "select" a specific color range from the hsb "pie"
+// Select points from point to range
+float select_from_range_smooth(in float point, in float range, in float input_edge)
+{
+    return smoothstep(point, point + 0.02, input_edge) - smoothstep((point+range), (point+range) + 0.02, input_edge);
+}
+
+
 //  Function from Iñigo Quiles
 //  https://www.shadertoy.com/view/MsS3Wc
 vec3 hsb2rgb( in vec3 c ){
@@ -59,19 +68,26 @@ void main(){
 
     // Move to a function
 
-    radius_multiplier = select_from_range(degrees_to_scalar(0.00), degrees_to_scalar(45.00), angle_x);
+    float selected_color = 0.35;
+
+    float begin_point_degrees = 120.00;
+    float range_degrees = 90.00;
+
+    radius_multiplier = select_from_range_smooth(degrees_to_scalar(begin_point_degrees), degrees_to_scalar(range_degrees), angle_x);
+    //  radius_multiplier = select_from_range(selected_color,selected_color  + degrees_to_scalar(15.00), angle_x);
+    //  radius_multiplier = select_from_range(selected_color,degrees_to_scalar(range_degrees) , angle_x);
     // radius_multiplier = 1.00;
 
     // color = hsb2rgb(vec3(angle_x, radius * radius_multiplier,1.0)) ;
 
     if(radius_multiplier == 1.00)
     {
-        color = hsb2rgb(vec3(0.45, radius ,1.0)) ;
+        color = hsb2rgb(vec3(selected_color, radius ,1.0));
     }
 
     else
     {
-        color = hsb2rgb(vec3(angle_x, radius ,1.0)) ;
+        color = hsb2rgb(vec3(angle_x, radius ,1.0));
     }
     
 
