@@ -68,12 +68,17 @@ void main(){
 
     // Move to a function
 
-    float selected_color = 0.35;
+    float begin_point_degrees = 138.00;
 
-    float begin_point_degrees = 120.00;
-    float range_degrees = 90.00;
+    float selected_color = degrees_to_scalar(begin_point_degrees);
 
-    radius_multiplier = select_from_range_smooth(degrees_to_scalar(begin_point_degrees), degrees_to_scalar(range_degrees), angle_x);
+    
+    float range_degrees = 55.00;
+
+    // radius_multiplier = select_from_range_smooth(degrees_to_scalar(begin_point_degrees), degrees_to_scalar(range_degrees), angle_x);
+    
+    radius_multiplier = select_from_range(degrees_to_scalar(begin_point_degrees), degrees_to_scalar(range_degrees), angle_x);
+
     //  radius_multiplier = select_from_range(selected_color,selected_color  + degrees_to_scalar(15.00), angle_x);
     //  radius_multiplier = select_from_range(selected_color,degrees_to_scalar(range_degrees) , angle_x);
     // radius_multiplier = 1.00;
