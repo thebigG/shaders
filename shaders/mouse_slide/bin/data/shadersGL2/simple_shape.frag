@@ -27,19 +27,26 @@ vec3 get_rect(in vec2 st, in float border)
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-    // vec2 bl = vec2(1.0);
+    vec2 bl = vec2(1.0);
 
-    // if(st.x < 0.3 && st.y < 0.3)
-    // {
+    if(st.x < 0.1 || st.y < 0.1)
+    {
     //     bl = vec2(0.0);
-    //     // bl = floor(st);
-    // }
+          bl = floor(st);
+    }
+
+    vec2 tr = vec2(1.0);
+
+    if(st.x > 0.9 || st.y > 0.9)
+    {
+        tr = floor(st);
+    }
 
     // float floored = floor(st);
 
     vec3 color = get_rect(st, 0.1);
 
-    float pct = bl.x * bl.y;
+    // float pct = (bl.x * bl.y) * (tr.x * tr.y);
 
     // vec3 color = vec3(pct);
 
