@@ -80,7 +80,16 @@ void main(){
     
     // vec3 color = get_rect(st, 0.2, 0.8);
 
-    vec3 red_rect = get_rect_in_color(st, 0.01, 0.04, vec3(1.0,0.0,0.0));
+    // vec2 new_st = step(0.00,st);
+
+    vec2 new_st = vec2(0.00);
+    new_st.x = step(0.00,st.x);
+
+    new_st.y = step(0.00,st.y);
+
+    vec3 red_rect = get_rect_in_color(new_st, 0.01, 0.30, vec3(1.0,0.0,0.0));
+
+    // vec3 red_rect = get_rect_in_color(st, 0.01, 0.04, vec3(1.0,0.0,0.0));
 
     vec3 green_rect = get_rect_in_color(st, 0.2, 0.8, vec3(0.0,1.0,0.0));
 
