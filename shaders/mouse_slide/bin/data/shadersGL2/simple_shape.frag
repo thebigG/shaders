@@ -9,6 +9,20 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 
+
+vec3 get_rect_smooth(in vec2 st)
+{
+        // bottom-left
+    vec2 bl = smoothstep(vec2(0.1), vec2(0.1+0.01),st);
+    float pct = bl.x * bl.y;
+
+    // top-right
+    vec2 tr = smoothstep(vec2(0.1), vec2(0.1+0.01),1.0-st);
+    pct *= tr.x * tr.y;
+
+    return vec3(pct);
+}
+
 vec3 get_rect(in vec2 st, in float border, in float boundary)
 {
         // bottom-left
@@ -66,7 +80,7 @@ void main(){
     
     // vec3 color = get_rect(st, 0.2, 0.8);
 
-    vec3 red_rect = get_rect_in_color(st, 0.3, 0.7, vec3(1.0,0.0,0.0));
+    vec3 red_rect = get_rect_in_color(st, 0.01, 0.04, vec3(1.0,0.0,0.0));
 
     vec3 green_rect = get_rect_in_color(st, 0.2, 0.8, vec3(0.0,1.0,0.0));
 
