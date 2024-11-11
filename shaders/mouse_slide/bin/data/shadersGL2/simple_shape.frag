@@ -39,7 +39,7 @@ vec3 get_rect(in vec2 st, in float border, in float boundary)
 }
 
 
-vec3 get_rect_in_color(in vec2 st, in float size, vec3 color)
+vec3 get_rect_in_color(in vec2 st, in vec2 origin_coords, in float size, vec3 color)
 {
     // vec2
         // bottom-left
@@ -49,25 +49,31 @@ vec3 get_rect_in_color(in vec2 st, in float size, vec3 color)
     
 
     float relative_size = size;
-    vec2 bl = step(vec2(0.0),st);
+    vec2 bl = step(origin_coords,st);
     // vec2 bl = smoothstep(vec2(0.1), vec2(0.1+0.01),st);
     float pct = bl.x * bl.y;
 
     // top-right
-    vec2 tr = step(vec2(0.0),size-st);
+    vec2 tr = step(origin_coords,size-st);
     // vec2 tr = step(vec2(st+origin),size-st);
     // vec2 tr = smoothstep(vec2(0.1), vec2(0.1+0.01),1.0-st);
     pct *= tr.x * tr.y;
 
+    float new_size = 0.3;
 
-    float origin = 0.1;
+    vec2 new_size_vec = step(0.3, st);
+
+
+    vec2 origin =  new_size - st;
+
+    origin *= new_size_vec;
 
     vec2 new_st = vec2(0.00);
-    new_st.x = step(origin,st.x);
+    new_st = step(vec2(0.0,0.0),origin);
 
-    new_st.y = step(origin,st.y);
+    // new_st.y = step(origin,st.y);
 
-    pct *= new_st.x * new_st.y;
+    // pct *= new_st.x * new_st.y;
 
     return vec3(pct) * color;
 }
@@ -98,7 +104,10 @@ void main(){
     
     // vec3 color = get_rect(st, 0.2, 0.8);
 
-    // vec2 new_st = step(0.00,st);
+    // vec2 new_st = step(0.3,st);
+
+    vec2 red_new_st = smoothstep(0.5,1.0,st);
+
 
 
 
@@ -106,7 +115,11 @@ void main(){
 
     // vec3 red_rect = get_rect_in_color(st* new_st, origin, 1.0, vec3(1.0,0.0,0.0));
 
-    vec3 red_rect = get_rect_in_color(st, 1.0, vec3(1.0,0.0,0.0));
+    vec3 red_rect = get_rect_in_color(red_new_st, vec2(0.2), 1.0, vec3(1.0,0.0,0.0));
+
+    vec2 blue_new_st = smoothstep(0.1,0.4,st);
+
+    vec3 blue_rect = get_rect_in_color(blue_new_st, vec2(0.2), 1.0, vec3(0.0,0.0,1.0));
 
     float rect_size = 0.8; //Used as width and height, for now.
 
@@ -122,4 +135,6 @@ void main(){
 
     // gl_FragColor = vec4(red_rect + green_rect,1.0);
     gl_FragColor = vec4(red_rect,1.0);
+
+    gl_FragColor += vec4(blue_rect,1.0);
 }
