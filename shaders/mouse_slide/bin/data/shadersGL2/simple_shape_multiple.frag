@@ -82,7 +82,6 @@ void main(){
     }
 
     vec2 red_new_st = smoothstep(0.5,1.0,st);
-    
 
     vec3 red_rect = get_rect_in_color(red_new_st, vec2(0.0), 0.1, vec3(1.0,0.0,0.0));
 
@@ -92,9 +91,7 @@ void main(){
 
     float rect_size = 0.8; //Used as width and height, for now.
 
-
-
     gl_FragColor = vec4(red_rect,1.0);
 
-    // gl_FragColor += vec4(blue_rect,1.0);
+    gl_FragColor += vec4(blue_rect,1.0);
 }
