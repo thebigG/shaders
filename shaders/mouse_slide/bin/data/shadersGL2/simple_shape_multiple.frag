@@ -49,12 +49,12 @@ vec3 get_rect_in_color(in vec2 st, in vec2 origin_coords, in float size, vec3 co
     
 
     float relative_size = size;
-    vec2 bl = step(origin_coords+0.001,st);
+    vec2 bl = step(origin_coords+0.000001,st);
     // vec2 bl = smoothstep(vec2(0.1), vec2(0.1+0.01),st);
     float pct = bl.x * bl.y;
 
     // top-right
-    vec2 tr = step(origin_coords+0.001,size-st);
+    vec2 tr = step(origin_coords+0.000001,size-st);
     // vec2 tr = step(vec2(st+origin),size-st);
     // vec2 tr = smoothstep(vec2(0.1), vec2(0.1+0.01),1.0-st);
     pct *= tr.x * tr.y;
@@ -85,13 +85,30 @@ void main(){
 
     vec3 red_rect = get_rect_in_color(red_new_st, vec2(0.0), 0.1, vec3(1.0,0.0,0.0));
 
-    vec2 blue_new_st = smoothstep(0.1,0.49,st);
+    // TODO: add function that takes rect_size and global_origin
 
-    vec3 blue_rect = get_rect_in_color(blue_new_st, vec2(0.0), 0.5, vec3(0.0,0.0,1.0));
+    float rect_size =  0.2;
 
-    float rect_size = 0.8; //Used as width and height, for now.
+    vec2 blue_new_st = smoothstep(0.0,rect_size,st);
+
+    vec2 global_origin = vec2(0.21,0.0);
+
+    
+
+    float blue_new_st_x = smoothstep(global_origin.x ,rect_size + global_origin.x,st.x);
+
+    float blue_new_st_y = smoothstep(global_origin.y,rect_size + global_origin.y,st.y);
+
+
+    float origin = 0.00;
+    vec3 blue_rect = get_rect_in_color(vec2(blue_new_st_x, blue_new_st_y), vec2(origin), 1.0, vec3(0.0,0.0,1.0));
+
+    vec3 blue_rect_2 = get_rect_in_color(blue_new_st, vec2(origin), 1.0, vec3(0.0,0.0,1.0));
+
 
     gl_FragColor = vec4(red_rect,1.0);
 
     gl_FragColor += vec4(blue_rect,1.0);
+
+    gl_FragColor += vec4(blue_rect_2,1.0);
 }
