@@ -62,6 +62,17 @@ vec3 get_rect_in_color(in vec2 st, in vec2 origin_coords, in float size, vec3 co
     return vec3(pct) * color;
 }
 
+vec3 get_rect_in_color_at(in float rect_size, in vec2 location, in vec2 st)
+{
+    float new_st_x = smoothstep(location.x ,rect_size + location.x,st.x);
+
+    float new_st_y = smoothstep(location.y,rect_size + location.y,st.y);
+
+    vec3 new_rect = get_rect_in_color(vec2(new_st_x, new_st_y), vec2(0.00), 1.0, vec3(0.0,0.0,1.0));
+
+    return new_rect;
+}
+
 
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -87,28 +98,23 @@ void main(){
 
     // TODO: add function that takes rect_size and global_origin
 
-    float rect_size =  0.2;
+    // vec2 blue_new_st = smoothstep(0.0,rect_size,st);
 
-    vec2 blue_new_st = smoothstep(0.0,rect_size,st);
 
-    vec2 global_origin = vec2(0.21,0.0);
 
-    
-
-    float blue_new_st_x = smoothstep(global_origin.x ,rect_size + global_origin.x,st.x);
-
-    float blue_new_st_y = smoothstep(global_origin.y,rect_size + global_origin.y,st.y);
 
 
     float origin = 0.00;
-    vec3 blue_rect = get_rect_in_color(vec2(blue_new_st_x, blue_new_st_y), vec2(origin), 1.0, vec3(0.0,0.0,1.0));
+    // vec3 blue_rect = get_rect_in_color(vec2(blue_new_st_x, blue_new_st_y), vec2(origin), 1.0, vec3(0.0,0.0,1.0));
 
-    vec3 blue_rect_2 = get_rect_in_color(blue_new_st, vec2(origin), 1.0, vec3(0.0,0.0,1.0));
+    vec3 blue_rect = get_rect_in_color_at(0.2, vec2(0.21,0.9), st);
+
+    // vec3 blue_rect_2 = get_rect_in_color(blue_new_st, vec2(origin), 1.0, vec3(0.0,0.0,1.0));
 
 
     gl_FragColor = vec4(red_rect,1.0);
 
     gl_FragColor += vec4(blue_rect,1.0);
 
-    gl_FragColor += vec4(blue_rect_2,1.0);
+    // gl_FragColor += vec4(blue_rect_2,1.0);
 }
