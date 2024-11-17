@@ -62,11 +62,11 @@ vec3 get_rect_in_color(in vec2 st, in vec2 origin_coords, in float size, vec3 co
     return vec3(pct) * color;
 }
 
-vec3 get_rect_in_color_at(in float rect_size, in vec2 location, in vec2 st)
+vec3 get_rect_in_color_at(in vec2 rect_size, in vec2 location, in vec2 st)
 {
-    float new_st_x = smoothstep(location.x ,rect_size + location.x,st.x);
+    float new_st_x = smoothstep(location.x ,rect_size.x + location.x,st.x);
 
-    float new_st_y = smoothstep(location.y,rect_size + location.y,st.y);
+    float new_st_y = smoothstep(location.y,rect_size.y + location.y,st.y);
 
     vec3 new_rect = get_rect_in_color(vec2(new_st_x, new_st_y), vec2(0.00), 1.0, vec3(0.0,0.0,1.0));
 
@@ -96,7 +96,7 @@ void main(){
 
     vec3 red_rect = get_rect_in_color(red_new_st, vec2(0.0), 0.1, vec3(1.0,0.0,0.0));
 
-    vec3 blue_rect = get_rect_in_color_at(0.2, vec2(0.21,0.9), st);
+    vec3 blue_rect = get_rect_in_color_at(vec2(0.2,0.4), vec2(0.21,0.5), st);
 
 
 
