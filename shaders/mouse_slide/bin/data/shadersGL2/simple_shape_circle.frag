@@ -26,9 +26,19 @@ void main(){
     // vec2 tC = vec2(0.5)-st;
     // pct = sqrt(tC.x*tC.x+tC.y*tC.y);
 
+    // vec3 color = vec3(pct) * vec3(1.0, 0.0, 0.0);
+
     vec3 color = vec3(pct);
 
-	// gl_FragColor = vec4( color * vec3(1.0, 0.0, 0.0), 1.0 );
+    vec3 color_step = step(0.2, color);
+
+	// gl_FragColor = vec4(color * vec3(1.0, 0.0, 0.0), 1.0);
+
+    // gl_FragColor = vec4(color * color_step * vec3(1.0, 0.0, 0.0), 1.0);
+
+    gl_FragColor = vec4(color * color_step, 1.0);
+
+    gl_FragColor = vec4(color, 1.0);
     
-    gl_FragColor = vec4( vec3(0.5), 1.0 );
+    // gl_FragColor = vec4( vec3(1.0), 1.0 );
 }
