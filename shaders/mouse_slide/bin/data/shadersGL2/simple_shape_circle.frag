@@ -28,19 +28,19 @@ void main(){
 
     // vec3 color = vec3(pct) * vec3(1.0, 0.0, 0.0);
 
-    vec3 color = vec3(pct);
+    vec3 color = vec3(1.0) - vec3(pct);
 
     vec3 stepped_color = smoothstep(0.0, 0.5, color);
 
     // vec3 color_step = step(0.5, color);
 
-    vec3 color_step = step(0.5, stepped_color);
+    vec3 color_step = step(1.0, stepped_color);
 
-	// gl_FragColor = vec4(color * vec3(1.0, 0.0, 0.0), 1.0);
+	// gl_FragColor = vec4(color * vec3(1.0,  0.0, 0.0), 1.0);
 
     // gl_FragColor = vec4(color * color_step * vec3(1.0, 0.0, 0.0), 1.0);
 
-    gl_FragColor = vec4(color * color_step, 1.0);
+    gl_FragColor = vec4(vec3(1.0,0.0,0.0) * color_step, 1.0);
 
     // gl_FragColor = vec4(color, 1.0);
     
