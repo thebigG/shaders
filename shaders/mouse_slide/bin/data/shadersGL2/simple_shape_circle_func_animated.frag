@@ -28,16 +28,27 @@ vec3 get_circle(vec2 st, in vec2 center_position, in float radius)
 }
 
 
+// Optimized way of getting distance of circle (using the dot product of vectors)
+// Example call: vec3 color = vec3(circle(st,0.05));
+// Though I prefer the way done in get_circle since the intent is more clear and obvious.
+// float circle(in vec2 _st, in float _radius){
+//     vec2 dist = _st-vec2(0.5);
+// 	return 1.-smoothstep(_radius-(_radius*0.01),
+//                          _radius+(_radius*0.01),
+//                          dot(dist,dist)*4.0);
+// }
+
+
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution;
 
     // gl_FragColor = vec4(get_circle(st,vec2(0.5,0.5), 0.2), 1.0);
 
-    gl_FragColor = vec4(get_circle(st, vec2(0.5,0.5), 0.3 ) * vec3(0.0,1.0,0.0), 1.0);
+    gl_FragColor = vec4(get_circle(st, vec2(0.5,0.5), 0.1 ) * vec3(1.0,1.0,1.0), 1.0);
 
     // gl_FragColor += vec4(get_circle(st,vec2(0.6,0.5), 0.2 ), 1.0);
 
-    gl_FragColor *= vec4(get_circle(st, vec2(0.5,0.7), 0.1) * vec3(1.0,0.0,0.0), 1.0);
+    // gl_FragColor *= vec4(get_circle(st, vec2(0.5,0.7), 0.1) * vec3(1.0,0.0,0.0), 1.0);
     
     // gl_FragColor = vec4(get_circle(st,vec2(0.0,0.0), abs(sin(u_time)  )) * vec3(1.0,0.0,0.0), 1.0);
 }
