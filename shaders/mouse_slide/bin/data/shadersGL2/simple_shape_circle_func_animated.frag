@@ -50,5 +50,11 @@ void main(){
 
     // gl_FragColor *= vec4(get_circle(st, vec2(0.5,0.7), 0.1) * vec3(1.0,0.0,0.0), 1.0);
     
-    // gl_FragColor = vec4(get_circle(st,vec2(0.0,0.0), abs(sin(u_time)  )) * vec3(1.0,0.0,0.0), 1.0);
+    // gl_FragColor = vec4(get_circle(st,vec2(0.0,0.0), abs(sin(u_time)  )) * vec3(1.0,0.0,0.0), 1.0); // Animates size
+
+    gl_FragColor = vec4(get_circle(st, abs(vec2(sin(u_time))), 0.2 ) * vec3(1.0,0.0,0.0), 1.0); //Animates position
+
+    gl_FragColor += vec4(get_circle(st, abs(vec2(cos(u_time))), 0.2 ) * vec3(0.0,1.0,0.0), 1.0); //Animates position
+
+    // gl_FragColor = pow ( vec4(get_circle(st, vec2(0.5), 0.6 ) * vec3(1.0,1.0,0.0), 1.0), vec4(get_circle(st, vec2(0.5), 0.6 ) * vec3(1.0,1.0,0.0), 1.0) ) ; // Just an experiment
 }
