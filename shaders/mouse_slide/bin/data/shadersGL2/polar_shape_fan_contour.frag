@@ -14,6 +14,11 @@ float plot(vec2 st, float point) {
     return smoothstep(point-0.02, point, (st.x)) - smoothstep(point, point+0.02, (st.x)) ;
 }
 
+//Literally the same function as above, but
+// it makes it a little bit more obvious that this plotting can be used for polar shape functions
+// too.
+//Extremely useful for drawing contours of shapes. 
+// https://thebookofshaders.com/07/
 float plot_polar(float r, float point) {    
     return smoothstep(point-0.02, point, (r)) - smoothstep(point, point+0.02, (r)) ;
 }
@@ -21,14 +26,9 @@ float plot_polar(float r, float point) {
 void main(){
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec3 color = vec3(0.0);
-
     vec2 pos = vec2(0.5)-st;
-
     float r = length(pos)*3.0;
-    
     float a = atan(pos.y,pos.x);
-
-    float filter = plot(pos, 0.2);
 
     float f = cos(a*5.0);
     // f *= abs(cos(a*3.));
@@ -38,18 +38,11 @@ void main(){
 
     float shape = smoothstep(f,f+0.02,r);
 
-    // color = vec3( 1.0 - smoothstep(f,f+0.02, r)) * filter;
-
-    // color = vec3( 1.0 - smoothstep(f,f+1.0, r));
-
     color = vec3(smoothstep(f-0.2,f, r)) - vec3(smoothstep(f,f+0.2, r));
 
-    color = ( vec3(smoothstep(f-0.02,f, r)) - vec3(smoothstep(f,f+0.02, r)));
+    color = (vec3(smoothstep(f-0.02,f, r)) - vec3(smoothstep(f,f+0.02, r)));
 
     color = vec3(plot_polar(r, f));
-
-
-
 
     gl_FragColor = vec4(color, 1.0);
 }
