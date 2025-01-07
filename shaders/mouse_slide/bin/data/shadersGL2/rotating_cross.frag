@@ -22,6 +22,12 @@ float box(in vec2 _st, in vec2 _size){
     uv *= smoothstep(_size,
                     _size+vec2(0.001),
                     vec2(1.0)-_st);
+
+    // The interpolation above is the same a simple step operation:
+    // vec2 uv = step(_size,_st);
+    // uv *= step(_size,vec2(1.0)-_st);
+
+
     return uv.x*uv.y;
 }
 
@@ -42,7 +48,7 @@ void main(){
     st += vec2(0.5);
 
     // Show the coordinates of the space on the background
-    // color = vec3(st.x,st.y,0.0);
+    color = vec3(st.x,st.y,0.0);
 
     // Add the shape on the foreground
     color += vec3(cross(st,0.4));
