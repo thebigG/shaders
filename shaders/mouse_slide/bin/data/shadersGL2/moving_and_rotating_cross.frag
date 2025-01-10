@@ -63,12 +63,12 @@ void main(){
     // translate = vec2(cos(y),sin(y));
     st += translate*0.3;
 
-    // Not sure if this rotation is correct...
-    st -= vec2(0.5) + (translate*0.3);
+    st -= vec2(0.5);
 
-    st = rotate2d((sin(u_time)) * PI) * st;
+    // st = rotate2d((sin(u_time)) * PI) * st; // Alternating rotation right-to-left and left-to-right
+    st = rotate2d(((u_time)) * PI) * st; //Keeps rotating without stopping
 
-    st += vec2(0.5) + (translate*0.3);
+    st += vec2(0.5) ;
 
     // st += translate;
 
