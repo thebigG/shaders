@@ -3,6 +3,8 @@
 //Sci-fi radar based on the work of gmunk for Oblivion
 //http://work.gmunk.com/OBLIVION-GFX
 
+#include "../../../../../lygia/draw/tri.glsl"
+
 
 
 
@@ -81,6 +83,10 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
 float triangles(vec2 uv, vec2 center, float radius)
 {
     vec2 d = uv - center;
+        // return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
+        //  + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
+        //  + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
+        //  + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
     return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
          + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
          + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
@@ -155,8 +161,9 @@ void main()
 {
     vec4 outputVec = vec4(0.5);
     vec2 st = gl_FragCoord.xy/u_resolution;
+    float t = tri(st, 0.9);
     // st += vec2(0.5);
-    mainImage(outputVec, gl_FragCoord.xy);
+    // mainImage(outputVec, gl_FragCoord.xy);
     // st -= vec2(0.5);
-    gl_FragColor = outputVec;
+    gl_FragColor = vec4(vec3(t), 1.0);
 }
