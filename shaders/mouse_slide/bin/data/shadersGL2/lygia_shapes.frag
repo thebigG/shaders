@@ -111,15 +111,11 @@ void main(void) {
     vec3 color = vec3(0.0);
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
-    // st = ratio(st, u_resolution);
+    st.x += 0.5;
 
-    st.x = smoothstep(0.5,0.6, st.x);
-    st.y = smoothstep(0.5,0.6, st.y);
-    
-    st = ratio(st, vec2(1.0,1.0));
     color = vec3(st.x,st.y,abs(sin(u_time)));
     color = decimate(color, 20.);
-    color += circle(st, 0.5, .1);
+    color += circle(st, 0.1, 0.01);
     
     gl_FragColor = vec4(color, 1.0);
 }
