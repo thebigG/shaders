@@ -4,6 +4,10 @@
 //http://work.gmunk.com/OBLIVION-GFX
 
 #include "../../../../../lygia/draw/tri.glsl"
+#include "../../../../../lygia/space/ratio.glsl"
+#include "../../../../../lygia/space/rotate.glsl"
+#include "../../../../../lygia/math/decimate.glsl"
+#include "../../../../../lygia/draw/circle.glsl"
 
 
 
@@ -55,8 +59,17 @@ float movingLine(vec2 uv, vec2 center, float radius)
 
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
-    float r = length(uv - center);
-    return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
+    // float r = length(uv - center);
+    // return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
+
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+
+    st.x = smoothstep(0.0,0.8, st.x);
+    st.y = smoothstep(0.0,0.8, st.y);
+    
+    st = ratio(st, vec2(1.0,1.0));
+    return circle(st, 1.0, 0.001);
 }
 
 float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
@@ -80,17 +93,40 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
         (SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius));
 }
 
+// float triangles(vec2 uv, vec2 center, float radius)
+// {
+//     vec2 d = uv - center;
+//         return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
+//          + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
+//          + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
+//          + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
+// }
+
 float triangles(vec2 uv, vec2 center, float radius)
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    st.x += radius;
+
+    st = rotate(st, M_PI/2.0);
+    
+    // st = ratio(st, vec2(1.0,1.0));
+    return tri(st, 0.025) ;
+}
+
+
+
+float triangles_lygia(vec2 uv, vec2 center, float radius)
 {
     vec2 d = uv - center;
         // return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
         //  + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
         //  + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
         //  + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
-    return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
-         + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
-         + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
-         + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
+    // return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
+    //      + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
+    //      + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
+         return tri(uv, 0.9);
 }
 
 float _cross(vec2 uv, vec2 center, float radius)
@@ -134,12 +170,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec2 uv = fragCoord.xy;
     //center of the image
     vec2 c = u_resolution.xy/2.0;
-    finalColor = vec3( 0.3*_cross(uv, c, 240.0) );
+    // finalColor = vec3( 0.3*_cross(uv, c, 240.0) );
     finalColor += ( circle(uv, c, 100.0, 1.0)
                   + circle(uv, c, 165.0, 1.0) ) * blue1;
     finalColor += (circle(uv, c, 240.0, 2.0) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
-    finalColor += triangles(uv, c, 315.0 + 30.0*sin(u_time)) * blue2;
+    // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
+    finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * blue2;
     finalColor += movingLine(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 10.0, 1.0) * blue3;
     finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
@@ -157,13 +194,66 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor = vec4( finalColor, 1.0 );
 }
 
+vec2 translate(vec2 uv, vec2 offset) {
+    return uv - offset;
+}
+
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#include "../../../../../lygia/space/ratio.glsl"
+#include "../../../../../lygia/space/rotate.glsl"
+#include "../../../../../lygia/math/decimate.glsl"
+#include "../../../../../lygia/draw/circle.glsl"
+
+vec4 simpleCircle(void) {
+    vec3 color = vec3(0.0);
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    // st = rotate(st, M_PI/2.0);
+
+    // st.x = smoothstep(0.5,0.65, st.x);
+    // st.y = smoothstep(0.5,0.65, st.y);
+    
+    // st = ratio(st, vec2(1.0,1.0));
+    st.x -= 0.5;
+    color += tri(st, 0.05);
+    
+    return vec4(color, 1.0);
+}
+
+
 void main()
 {
     vec4 outputVec = vec4(0.5);
     vec2 st = gl_FragCoord.xy/u_resolution;
-    float t = tri(st, 0.9);
+    
+    vec2 pos = vec2(0.5,0.5);
+    float x_offset = 0.8;
+    float y_offset = 0.5;
+    // st.x = smoothstep(pos.x ,pos.x + x_offset, st.x);
+    // st.y = smoothstep(pos.y,pos.y + y_offset, st.y);
+
+    // st.x = smoothstep(pos.x ,pos.x, st.x);
+    // st.y = smoothstep(pos.y,pos.y, st.y);
+    
+    float t = tri(st, 0.1);
     // st += vec2(0.5);
-    // mainImage(outputVec, gl_FragCoord.xy);
+    mainImage(outputVec, gl_FragCoord.xy);
     // st -= vec2(0.5);
-    gl_FragColor = vec4(vec3(t), 1.0);
+    // outputVec = simpleCircle();
+
+    
+
+
+
+
+
+
+
+    gl_FragColor = outputVec;
 }
+
+
