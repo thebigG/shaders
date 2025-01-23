@@ -57,20 +57,28 @@ float movingLine(vec2 uv, vec2 center, float radius)
     else return 0.0;
 }
 
+// float circle(vec2 uv, vec2 center, float radius, float width)
+// {
+//     // float r = length(uv - center);
+//     // return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
+
+//     // vec2 st = gl_FragCoord.xy/u_resolution.xy;
+//     vec2 st = gl_FragCoord.xy;
+    
+//     return circle(st, 0.5, 0.001);
+// }
+
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
-    // float r = length(uv - center);
-    // return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
-
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
-
-
-    st.x = smoothstep(0.0,0.8, st.x);
-    st.y = smoothstep(0.0,0.8, st.y);
+    vec2 _center = u_resolution.xy/2.0;
+    // Circle relative to center
+    // These magical values should be passed to the function
+    vec2 new_st = smoothstep(_center-500.0, _center+500.0, gl_FragCoord.xy);
     
-    st = ratio(st, vec2(1.0,1.0));
-    return circle(st, 1.0, 0.001);
+    return circle(new_st, 0.5, 0.01);
 }
+
 
 float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
 {
@@ -110,8 +118,7 @@ float triangles(vec2 uv, vec2 center, float radius)
 
     st = rotate(st, M_PI/2.0);
     
-    // st = ratio(st, vec2(1.0,1.0));
-    return tri(st, 0.025) ;
+    return tri(st, 0.020);
 }
 
 
@@ -212,14 +219,25 @@ vec4 simpleCircle(void) {
     vec3 color = vec3(0.0);
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
+    // st = gl_FragCoord.xy/vec2(100,100);
+
+
+    st = gl_FragCoord.xy/vec2(300,300);
+
+    st -= 1.0;
+
+    // st = gl_FragCoord.xy/vec2(100,100);
+
+    // st -= 1.0;
+
     // st = rotate(st, M_PI/2.0);
 
     // st.x = smoothstep(0.5,0.65, st.x);
     // st.y = smoothstep(0.5,0.65, st.y);
     
-    // st = ratio(st, vec2(1.0,1.0));
-    st.x -= 0.5;
-    color += tri(st, 0.05);
+    // st = ratio(st, vec2(100,100));
+    // st.x -= 0.5;
+    color += circle(st, 1.0);
     
     return vec4(color, 1.0);
 }
@@ -244,9 +262,6 @@ void main()
     mainImage(outputVec, gl_FragCoord.xy);
     // st -= vec2(0.5);
     // outputVec = simpleCircle();
-
-    
-
 
 
 
