@@ -74,9 +74,9 @@ float circle(vec2 uv, vec2 center, float radius, float width)
     vec2 _center = u_resolution.xy/2.0;
     // Circle relative to center
     // These magical values should be passed to the function
-    vec2 new_st = smoothstep(_center-500.0, _center+500.0, gl_FragCoord.xy);
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
     
-    return circle(new_st, 0.5, 0.01);
+    return circle(new_st, 0.15, width);
 }
 
 
@@ -178,14 +178,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //center of the image
     vec2 c = u_resolution.xy/2.0;
     // finalColor = vec3( 0.3*_cross(uv, c, 240.0) );
-    finalColor += ( circle(uv, c, 100.0, 1.0)
-                  + circle(uv, c, 165.0, 1.0) ) * blue1;
-    finalColor += (circle(uv, c, 240.0, 2.0) );//+ dots(uv,c,240.0)) * blue4;
+    finalColor += ( circle(uv, c, 1000.0, 0.001)
+                  + circle(uv, c, 1650.0, 0.001) ) * blue1;
+    finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * blue2;
     finalColor += movingLine(uv, c, 240.0) * blue3;
-    finalColor += circle(uv, c, 10.0, 1.0) * blue3;
+    finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
     if( length(uv-c) < 240.0 )
     {

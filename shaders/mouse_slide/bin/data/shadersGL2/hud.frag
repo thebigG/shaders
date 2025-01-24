@@ -129,6 +129,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //center of the image
     vec2 c = u_resolution.xy/2.0;
     finalColor = vec3( 0.3*_cross(uv, c, 240.0) );
+    // finalColor += ( circle(uv, c, 100.0, 1.0)
+    //               + circle(uv, c, 165.0, 1.0) ) * blue1;
     finalColor += ( circle(uv, c, 100.0, 1.0)
                   + circle(uv, c, 165.0, 1.0) ) * blue1;
     finalColor += (circle(uv, c, 240.0, 2.0) );//+ dots(uv,c,240.0)) * blue4;
