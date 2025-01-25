@@ -215,31 +215,34 @@ precision mediump float;
 #include "../../../../../lygia/draw/circle.glsl"
 
 vec4 simpleCircle(void) {
-    vec3 color = vec3(0.0);
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
-
-    // st = gl_FragCoord.xy/vec2(100,100);
-
-
-    st = gl_FragCoord.xy/vec2(300,300);
-
-    st -= 1.0;
-
-    // st = gl_FragCoord.xy/vec2(100,100);
-
-    // st -= 1.0;
-
-    // st = rotate(st, M_PI/2.0);
-
-    // st.x = smoothstep(0.5,0.65, st.x);
-    // st.y = smoothstep(0.5,0.65, st.y);
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+    float width = 0.03;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
     
-    // st = ratio(st, vec2(100,100));
-    // st.x -= 0.5;
-    color += circle(st, 1.0);
-    
-    return vec4(color, 1.0);
+    return vec4(circle(new_st, 0.15, width));
 }
+
+
+vec4 simpleHalfCircle(void) {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(2000.0)/2.0;
+    float width = 0.03;
+    // Circle relative to center    
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    float full_circle = circle(new_st, 0.15, width);
+    if (gl_FragCoord.x > _center.x)
+    {
+        full_circle = 0.0;
+    }
+    
+    return vec4(full_circle);
+}
+
 
 
 void main()
@@ -257,10 +260,8 @@ void main()
     // st.y = smoothstep(pos.y,pos.y, st.y);
     
     float t = tri(st, 0.1);
-    // st += vec2(0.5);
     mainImage(outputVec, gl_FragCoord.xy);
-    // st -= vec2(0.5);
-    // outputVec = simpleCircle();
+    outputVec = simpleHalfCircle();
 
 
 
