@@ -67,13 +67,12 @@ float movingLine(vec2 uv, vec2 center, float radius)
     
 //     return circle(st, 0.5, 0.001);
 // }
-
+ 
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 _center = u_resolution.xy/2.0;
     // Circle relative to center
-    // These magical values should be passed to the function
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
     
     return circle(new_st, 0.15, width);
