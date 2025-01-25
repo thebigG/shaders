@@ -234,8 +234,47 @@ vec4 simpleHalfCircle(void) {
     // Circle relative to center    
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
 
-    float full_circle = circle(new_st, 0.15, width);
-    if (gl_FragCoord.x > _center.x)
+    float full_circle = circle(new_st, 0.5, width);
+    if (gl_FragCoord.y > _center.y)
+    {
+        full_circle = 0.0;
+    }
+    
+    return vec4(full_circle);
+}
+
+vec4 simpleQuarterCircle(void) {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+    float width = 0.03;
+    // Circle relative to center    
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    float full_circle = circle(new_st, 0.5, width);
+    if (gl_FragCoord.y > _center.y*0.5)
+    {
+        full_circle = 0.0;
+    }
+    
+    return vec4(full_circle);
+}
+
+//TODO:Animate the circle between _center.y*0.5 and _center.y
+//A sin wave should do the trick.
+vec4 simpleHalfAndQuarterCircle()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+    float width = 0.03;
+    // Circle relative to center    
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    // smoothstep(0.0,1.0);
+
+    float full_circle = circle(new_st, 0.5, width);
+    if (gl_FragCoord.y > _center.y*0.5)
     {
         full_circle = 0.0;
     }
@@ -261,12 +300,8 @@ void main()
     
     float t = tri(st, 0.1);
     mainImage(outputVec, gl_FragCoord.xy);
-    outputVec = simpleHalfCircle();
-
-
-
-
-
+    // outputVec = simpleQuarterCircle();
+    outputVec = simpleHalfAndQuarterCircle();
 
     gl_FragColor = outputVec;
 }
