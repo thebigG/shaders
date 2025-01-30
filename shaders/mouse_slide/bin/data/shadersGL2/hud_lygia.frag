@@ -79,16 +79,39 @@ float circle(vec2 uv, vec2 center, float radius, float width)
 }
 
 
+// float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
+// {
+//     vec2 d = uv - center;
+//     float r = sqrt( dot( d, d ) );
+//     d = normalize(d);
+//     if( abs(d.y) > opening )
+// 	    return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
+//     else
+//         return 0.0;
+// }
+
 float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
 {
-    vec2 d = uv - center;
-    float r = sqrt( dot( d, d ) );
-    d = normalize(d);
-    if( abs(d.y) > opening )
-	    return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
-    else
-        return 0.0;
+    // vec2 st = uv/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    // _center.y += 10.0;
+    // Circle relative to center    
+    vec2 new_st = smoothstep(_center-radius, _center+radius, uv);
+    // float arc_gap = (_center.y * 0.50) * opening;
+    // float arc_gap = (_center.y * 0.50) * 1.0;
+
+    float arc_gap = (_center.y * 0.50) * 1.0;
+    float full_circle = circle(new_st, 0.5, width);
+    float sinusoidal = smoothstep(-1.0,1.0, sin(u_time * 1.0)) + 0.2;
+    if ((uv.y) > (center.y - ((radius* 0.2 ) * sinusoidal) ))
+    {
+        full_circle = 0.0;
+    }
+
+    return full_circle;
 }
+
+
 float circle3(vec2 uv, vec2 center, float radius, float width)
 {
     vec2 d = uv - center;
@@ -182,10 +205,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
-    finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * blue2;
+    finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
     finalColor += movingLine(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
-    finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
+    // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
+    finalColor += 0.7 * circle2(uv, c, 753.000, 0.005, 0.5+0.2*cos(u_time)) * blue3;
     if( length(uv-c) < 240.0 )
     {
         //animate some bips with random movements
@@ -244,7 +268,6 @@ vec4 simpleHalfCircle(void) {
 }
 
 vec4 simpleQuarterCircle(void) {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 _center = u_resolution.xy/2.0;
     vec2 radius = vec2(1000.0);
     float width = 0.03;
@@ -263,14 +286,13 @@ vec4 simpleQuarterCircle(void) {
 //Animate the circle between _center.y*0.5 and _center.y
 vec4 simpleHalfAndQuarterCircle()
 {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 _center = u_resolution.xy/2.0;
-    vec2 radius = vec2(1000.0);
-    float width = 0.01;
+    vec2 radius  = vec2(1000.0);
+    float width  = 0.01;
     // Circle relative to center    
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
-    float normalized = smoothstep(-1.0,1.0, sin(u_time * 5.0));
-    float arc_gap = (_center.y * 0.8) * normalized;
+    float normalized = smoothstep(-1.0,1.0, sin(u_time * 1.0));
+    float arc_gap = (_center.y * 0.5) * (normalized + 0.2);
     float full_circle = circle(new_st, 0.5, width);
     if (gl_FragCoord.y > _center.y - arc_gap)
     {
@@ -294,7 +316,7 @@ void main()
     float t = tri(st, 0.1);
     mainImage(outputVec, gl_FragCoord.xy);
     // outputVec = simpleQuarterCircle();
-    // outputVec = simpleHalfAndQuarterCircle();
+    // outputVec = simpleHalfCircle();
 
     gl_FragColor = outputVec;
 }
