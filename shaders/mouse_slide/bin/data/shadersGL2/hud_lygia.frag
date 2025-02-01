@@ -79,31 +79,30 @@ float circle(vec2 uv, vec2 center, float radius, float width)
 }
 
 
-// float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
-// {
-//     vec2 d = uv - center;
-//     float r = sqrt( dot( d, d ) );
-//     d = normalize(d);
-//     if( abs(d.y) > opening )
-// 	    return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
-//     else
-//         return 0.0;
-// }
-
 float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
 {
-    // vec2 st = uv/u_resolution.xy;
-    vec2 _center = u_resolution.xy/2.0;
-    // _center.y += 10.0;
-    // Circle relative to center    
-    vec2 new_st = smoothstep(_center-radius, _center+radius, uv);
-    // float arc_gap = (_center.y * 0.50) * opening;
-    // float arc_gap = (_center.y * 0.50) * 1.0;
+    vec2 d = uv - center;
+    float r = sqrt( dot( d, d ) );
+    d = normalize(d);
+    if( abs(d.y) > opening )
+	    return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
+    else
+        return 0.0;
+}
 
-    float arc_gap = (_center.y * 0.50) * 1.0;
-    float full_circle = circle(new_st, 0.5, width);
-    float sinusoidal = smoothstep(-1.0,1.0, sin(u_time * 1.0)) + 0.2;
-    if ((uv.y) > (center.y - ((radius* 0.2 ) * sinusoidal) ))
+
+
+// Draws a c
+float circle2_lygia(vec2 uv, vec2 center, float radius, float width, float opening)
+{
+    // Circle relative to center    
+    vec2 new_st = smoothstep(center-radius, center+radius, uv);
+
+    float arc_gap = (center.y * 0.50) * 1.0;
+    float full_circle = circle(new_st, 0.15, width);
+    // 0.6 works as the gap of the circle 
+    float sinusoidal = smoothstep(-1.0,1.0, sin(u_time * 1.0)) + 0.0;
+    if ((uv.y) < (center.y + ((radius * 0.05 ) * opening) ) && ((uv.y) > (center.y - ((radius * 0.05 ) * opening) )))
     {
         full_circle = 0.0;
     }
@@ -209,7 +208,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += movingLine(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
-    finalColor += 0.7 * circle2(uv, c, 753.000, 0.005, 0.5+0.2*cos(u_time)) * blue3;
+    finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0, cos(u_time)) + 0.6 ) * blue3;
     if( length(uv-c) < 240.0 )
     {
         //animate some bips with random movements
