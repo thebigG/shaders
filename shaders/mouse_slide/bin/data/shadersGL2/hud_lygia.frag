@@ -92,16 +92,19 @@ float circle2(vec2 uv, vec2 center, float radius, float width, float opening)
 
 
 
-// Draws a c
-float circle2_lygia(vec2 uv, vec2 center, float radius, float width, float opening)
+// Draws a circle with opening gap(between 0 and 1) that is applied to (0.5 * radius)
+//A cos/sin wave could be used to animate the gap
+//uv: current coord
+//center: center of frame/rect(e.g. u_resolution.xy/2.0). The circle will be drawn relative to this center point
+//radius: The radius of the circle relative to center
+// stroke_width: The width of the circle stroke
+// opening: A value between 0.0 and 1.0 that is applied to the gap (0.5 * radius)
+float circle2_lygia(vec2 uv, vec2 center, float radius, float stroke_width, float opening)
 {
     // Circle relative to center    
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
 
-    float arc_gap = (center.y * 0.50) * 1.0;
-    float full_circle = circle(new_st, 0.15, width);
-    // 0.6 works as the gap of the circle 
-    float sinusoidal = smoothstep(-1.0,1.0, sin(u_time * 1.0)) + 0.0;
+    float full_circle = circle(new_st, 0.15, stroke_width);
     if ((uv.y) < (center.y + ((radius * 0.05 ) * opening) ) && ((uv.y) > (center.y - ((radius * 0.05 ) * opening) )))
     {
         full_circle = 0.0;
@@ -208,7 +211,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += movingLine(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
-    finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0, cos(u_time)) + 0.6 ) * blue3;
+    finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
     if( length(uv-c) < 240.0 )
     {
         //animate some bips with random movements
