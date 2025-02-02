@@ -125,6 +125,32 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
         (SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius));
 }
 
+
+float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
+{
+    // vec2 d = uv - center;
+    // float r = sqrt( dot( d, d ) );
+    // d = normalize(d);
+    // float theta = 180.0*(atan(d.y,d.x)/M_PI);
+    // return smoothstep(2.0, 2.1, abs(mod(theta+2.0,45.0)-2.0)) *
+    //     mix( 0.5, 1.0, step(45.0, abs(mod(theta, 180.0)-90.0)) ) *
+    //     (SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius));
+
+
+    float opening  = 1.0;
+    // Circle relative to center    
+    vec2 new_st = smoothstep(center-radius, center+radius, uv);
+
+    float full_circle = circle(new_st, 0.15, 0.00725);
+    if ((uv.y) < (center.y + ((radius * 0.05 ) * opening) ) && ((uv.y) > (center.y - ((radius * 0.05 ) * opening) )))
+    {
+        full_circle = 0.0;
+    }
+
+    return full_circle;
+
+}
+
 // float triangles(vec2 uv, vec2 center, float radius)
 // {
 //     vec2 d = uv - center;
@@ -206,6 +232,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                   + circle(uv, c, 1650.0, 0.001) ) * blue1;
     finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
+    finalColor += circle3_lygia(uv, c, 2910.0, 4.0) * blue1;
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
     finalColor += movingLine(uv, c, 240.0) * blue3;
