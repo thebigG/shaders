@@ -128,15 +128,6 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
 
 float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 {
-    // vec2 d = uv - center;
-    // float r = sqrt( dot( d, d ) );
-    // d = normalize(d);
-    // float theta = 180.0*(atan(d.y,d.x)/M_PI);
-    // return smoothstep(2.0, 2.1, abs(mod(theta+2.0,45.0)-2.0)) *
-    //     mix( 0.5, 1.0, step(45.0, abs(mod(theta, 180.0)-90.0)) ) *
-    //     (SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius));
-
-
     float opening  = 1.0;
     // Circle relative to center    
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
