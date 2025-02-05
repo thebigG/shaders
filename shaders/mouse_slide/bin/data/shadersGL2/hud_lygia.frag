@@ -128,12 +128,21 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
 
 float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 {
-    float opening  = 1.0;
+    float opening  = 0.0040;
     // Circle relative to center    
+    
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
 
+
     float full_circle = circle(new_st, 0.15, 0.00725);
-    if ((uv.y) < (center.y + ((radius * 0.05 ) * opening) ) && ((uv.y) > (center.y - ((radius * 0.05 ) * opening) )))
+
+    // TODO:This is ugly. Need to come up with a much more elegant way of doing this...
+    if ((uv.y) < (center.y + ((radius * opening ) ) ) && ((uv.y) > (center.y - ((radius * opening ) ) )) )
+    {
+        full_circle = 0.0;
+    }
+
+    if ( ((uv.y) < ( (center.y + radius * 0.007) + ((radius * 0.0010 ) ) ) && ((uv.y) > ((center.y + radius * 0.007) - ((radius * 0.0010 ) ) )))  && !((uv.y) < (center.y + ((radius * opening ) ) ) && ((uv.y) > (center.y - ((radius * opening ) ) ))) )
     {
         full_circle = 0.0;
     }
