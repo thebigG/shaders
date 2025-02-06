@@ -126,25 +126,34 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
 }
 
 
+bool is_uv_in_gap(vec2 uv, vec2 center, float gap)
+{
+    bool is_in_gap = false;
+    if ((uv.y) < (center.y + (gap) ) && ((uv.y) > (center.y - (gap ) )) )
+    {
+        is_in_gap = true;
+    }
+
+    return is_in_gap;
+}
+
 float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 {
-    float opening  = 0.0040;
+    float opening  = 0.02;
     // Circle relative to center    
     
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
 
+    float full_circle = circle(new_st, 0.15, width);
 
-    float full_circle = circle(new_st, 0.15, 0.00725);
-
-    // TODO:This is ugly. Need to come up with a much more elegant way of doing this...
-    if ((uv.y) < (center.y + ((radius * opening ) ) ) && ((uv.y) > (center.y - ((radius * opening ) ) )) )
+    if(is_uv_in_gap(uv, center + radius * 0.07, (radius * 0.15 * opening)))
     {
-        full_circle = 0.0;
+        full_circle = 0.00;
     }
 
-    if ( ((uv.y) < ( (center.y + radius * 0.007) + ((radius * 0.0010 ) ) ) && ((uv.y) > ((center.y + radius * 0.007) - ((radius * 0.0010 ) ) )))  && !((uv.y) < (center.y + ((radius * opening ) ) ) && ((uv.y) > (center.y - ((radius * opening ) ) ))) )
+    if(is_uv_in_gap(uv, center, (radius * 0.15 * opening)))
     {
-        full_circle = 0.0;
+        full_circle = 0.00;
     }
 
     return full_circle;
@@ -232,7 +241,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                   + circle(uv, c, 1650.0, 0.001) ) * blue1;
     finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
-    finalColor += circle3_lygia(uv, c, 2910.0, 4.0) * blue1;
+    finalColor += circle3_lygia(uv, c, 3000.0, 0.0010) * blue1;
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
     finalColor += movingLine(uv, c, 240.0) * blue3;
