@@ -137,6 +137,17 @@ bool is_uv_in_gap(vec2 uv, vec2 center, float gap)
     return is_in_gap;
 }
 
+bool is_uv_in_gap_x(vec2 uv, vec2 center, float gap)
+{
+    bool is_in_gap = false;
+    if ((uv.x) < (center.x + (gap) ) && ((uv.x) > (center.x - (gap ) )) )
+    {
+        is_in_gap = true;
+    }
+
+    return is_in_gap;
+}
+
 float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 {
     float opening  = 0.02;
@@ -147,6 +158,17 @@ float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
     float full_circle = circle(new_st, 0.15, width);
 
     if(is_uv_in_gap(uv, center + radius * 0.07, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+    if(is_uv_in_gap(uv, center - radius * 0.07, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+
+    if(is_uv_in_gap_x(uv, center + ((radius * 0.7 )), (radius * 0.15 * opening)))
     {
         full_circle = 0.00;
     }
