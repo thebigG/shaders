@@ -168,7 +168,7 @@ float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
     }
 
 
-    if(is_uv_in_gap_x(uv, center + ((radius * 0.7 )), (radius * 0.15 * opening)))
+    if(is_uv_in_gap_x(uv, center, (radius * 0.15 * opening)))
     {
         full_circle = 0.00;
     }
