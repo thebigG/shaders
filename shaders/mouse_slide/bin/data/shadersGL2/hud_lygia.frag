@@ -129,7 +129,18 @@ float circle3(vec2 uv, vec2 center, float radius, float width)
 bool is_uv_in_gap(vec2 uv, vec2 center, float gap)
 {
     bool is_in_gap = false;
-    if ((uv.y) < (center.y + (gap) ) && ((uv.y) > (center.y - (gap ) )) )
+    if ((uv.y) < (center.y + (gap/2.0) ) && ((uv.y) > (center.y - (gap/2.0 ) )) )
+    {
+        is_in_gap = true;
+    }
+
+    return is_in_gap;
+}
+
+bool is_uv_in_gap2(vec2 uv, vec2 center, float gap)
+{
+    bool is_in_gap = false;
+    if (((uv.y) > (center.y - (gap ) ))  )
     {
         is_in_gap = true;
     }
@@ -150,7 +161,11 @@ bool is_uv_in_gap_x(vec2 uv, vec2 center, float gap)
 
 float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 {
-    float opening  = 0.02;
+    float opening  = 0.04;
+
+    float whole_color = 1.0;
+
+    float half_color = 0.5;
     // Circle relative to center    
     
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
@@ -161,19 +176,46 @@ float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
     {
         full_circle = 0.00;
     }
+    else
+    {
+        // full_circle *= whole_color;
+    }
 
     if(is_uv_in_gap(uv, center - radius * 0.07, (radius * 0.15 * opening)))
     {
         full_circle = 0.00;
     }
 
+    else
+    {
+        // full_circle *= whole_color;
+    }
 
-    if(is_uv_in_gap_x(uv, center, (radius * 0.15 * opening)))
+
+    // if(is_uv_in_gap_x(uv, center, (radius * 0.15 * opening)))
+    // {
+    //     full_circle = 0.00;
+    // }
+    // else
+    // {
+    //     full_circle *= whole_color;
+    // }
+
+    if(is_uv_in_gap(uv, center, (radius * 0.15 * opening)))
     {
         full_circle = 0.00;
     }
+    else
+    {
+        // full_circle *= half_color;
+    }
 
-    if(is_uv_in_gap(uv, center, (radius * 0.15 * opening)))
+
+    
+    // Remove unwanted circle areas
+    if(is_uv_in_gap2(uv, 
+                    (center + radius * 0.07 )+ (radius * 0.15 * opening), 
+                    (radius * 0.2 * opening)))
     {
         full_circle = 0.00;
     }
