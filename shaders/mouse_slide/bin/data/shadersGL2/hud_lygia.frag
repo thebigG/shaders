@@ -148,6 +148,18 @@ bool is_uv_in_gap2(vec2 uv, vec2 center, float gap)
     return is_in_gap;
 }
 
+bool is_uv_in_gap3(vec2 uv, vec2 center, float gap)
+{
+    bool is_in_gap = false;
+    if ((uv.y) < (center.y + (gap) ) )
+    {
+        is_in_gap = true;
+    }
+
+    return is_in_gap;
+}
+
+
 bool is_uv_in_gap_x(vec2 uv, vec2 center, float gap)
 {
     bool is_in_gap = false;
@@ -213,12 +225,88 @@ float circle3_lygia(vec2 uv, vec2 center, float radius, float width)
 
     
     // Remove unwanted circle areas
+    // Remove top arc
     if(is_uv_in_gap2(uv, 
-                    (center + radius * 0.07 )+ (radius * 0.15 * opening), 
-                    (radius * 0.2 * opening)))
+                    (center + radius * 0.07 ), 
+                    (radius * 0.069 * opening)))
     {
         full_circle = 0.00;
     }
+
+
+    // Remove unwanted circle areas
+    // Remove bottom arc
+    if(is_uv_in_gap3(uv, 
+                    (center - radius * 0.07 ), 
+                    (radius * 0.069 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+    return full_circle;
+
+}
+
+
+
+float circle3_lygia2(vec2 uv, vec2 center, float radius, float width)
+{
+    float opening  = 0.04;
+
+    float whole_color = 1.0;
+
+    float half_color = 0.5;
+    // Circle relative to center    
+    
+    vec2 new_st = smoothstep(center-radius, center+radius, uv);
+
+    float full_circle = circle(new_st, 0.15, width);
+
+    if(is_uv_in_gap(uv, center + radius * 0.07, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+    if(is_uv_in_gap(uv, center - radius * 0.07, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+
+    if(is_uv_in_gap_x(uv, center, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+    else
+    {
+        full_circle *= whole_color;
+    }
+
+    if(is_uv_in_gap(uv, center, (radius * 0.15 * opening)))
+    {
+        full_circle = 0.00;
+    }
+
+
+    
+    // Remove unwanted circle areas
+    // Remove top arc
+    // if(is_uv_in_gap2(uv, 
+    //                 (center + radius * 0.07 ), 
+    //                 (radius * 0.069 * opening)))
+    // {
+    //     full_circle = 0.00;
+    // }
+
+
+    // // Remove unwanted circle areas
+    // // Remove bottom arc
+    // if(is_uv_in_gap3(uv, 
+    //                 (center - radius * 0.07 ), 
+    //                 (radius * 0.069 * opening)))
+    // {
+    //     full_circle = 0.00;
+    // }
 
     return full_circle;
 
@@ -305,7 +393,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                   + circle(uv, c, 1650.0, 0.001) ) * blue1;
     finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
-    finalColor += circle3_lygia(uv, c, 3000.0, 0.0010) * blue1;
+    // finalColor += circle3_lygia(uv, c, 3000.0, 0.0010) * blue1;
+    finalColor += circle3_lygia2(uv, c, 3000.0, 0.0010) * blue1;
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
     finalColor += movingLine(uv, c, 240.0) * blue3;
