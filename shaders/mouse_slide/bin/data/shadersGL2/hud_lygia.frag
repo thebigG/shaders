@@ -57,6 +57,27 @@ float movingLine(vec2 uv, vec2 center, float radius)
     else return 0.0;
 }
 
+float movingLine_lygia(vec2 uv, vec2 center, float radius)
+{
+    //angle of the line
+    float theta0 = 90.0 * u_time;
+    vec2 d = uv - center;
+    float r = sqrt( dot( d, d ) );
+    if(r<radius)
+    {
+        //compute the distance to the line theta=theta0
+        vec2 p = radius*vec2(cos(theta0*M_PI/180.0),
+                            -sin(theta0*M_PI/180.0));
+        float l = length( d - p*clamp( dot(d,p)/dot(p,p), 0.0, 1.0) );
+    	d = normalize(d);
+        //compute gradient based on angle difference to theta0
+   	 	float theta = mod(180.0*atan(d.y,d.x)/M_PI+theta0,360.0);
+        float gradient = clamp(1.0-theta/90.0,0.0,1.0);
+        return SMOOTH(l,1.0)+0.5*gradient;
+    }
+    else return 0.0;
+}
+
 // float circle(vec2 uv, vec2 center, float radius, float width)
 // {
 //     // float r = length(uv - center);
@@ -399,7 +420,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
-    finalColor += movingLine(uv, c, 240.0) * blue3;
+    // finalColor += movingLine(uv, c, 240.0) * blue3;
+    finalColor += movingLine_lygia(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
@@ -430,6 +452,7 @@ precision mediump float;
 #include "../../../../../lygia/space/rotate.glsl"
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
+#include "../../../../../lygia/draw/line.glsl"
 
 vec4 simpleCircle(void) {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -495,6 +518,52 @@ vec4 simpleHalfAndQuarterCircle()
     return vec4(full_circle);
 }
 
+vec4 simpleLine()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+    float width = 0.6;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    st = rotate(st, M_PI/2.0);
+    // float full_line = line(new_st, _center-radius, _center+radius, width);
+
+    float full_line = line(gl_FragCoord.xy, _center, _center+u_resolution.xy/2.0, width);
+
+    // st = rotate(st, M_PI/2.0);
+    
+    return vec4(full_line);
+}
+
+vec4 simpleLine2()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+    float width = 0.6;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    
+    // float full_line = line(new_st, _center-radius, _center+radius, width);
+
+    vec2 new_point_b = _center;
+
+    new_point_b.x =+ u_resolution.x/2.0;
+
+    new_point_b.y =+ u_resolution.y/2.0;
+
+    // vec2 new_point_b = _center+u_resolution.xy/2.0;
+
+    // cart2polar();
+
+    float full_line = line(gl_FragCoord.xy, _center, new_point_b , width);
+
+
+    
+    return vec4(full_line);
+}
+
 
 
 void main()
@@ -507,9 +576,11 @@ void main()
     float y_offset = 0.5;
     
     float t = tri(st, 0.1);
-    mainImage(outputVec, gl_FragCoord.xy);
+    // mainImage(outputVec, gl_FragCoord.xy);
     // outputVec = simpleQuarterCircle();
     // outputVec = simpleHalfCircle();
+    outputVec = simpleLine2();
+    // outputVec += simpleLine2();
 
     gl_FragColor = outputVec;
 }
