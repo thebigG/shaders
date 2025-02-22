@@ -450,6 +450,7 @@ precision mediump float;
 
 #include "../../../../../lygia/space/ratio.glsl"
 #include "../../../../../lygia/space/rotate.glsl"
+#include "../../../../../lygia/space/cart2polar.glsl"
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
@@ -529,7 +530,8 @@ vec4 simpleLine()
     st = rotate(st, M_PI/2.0);
     // float full_line = line(new_st, _center-radius, _center+radius, width);
 
-    float full_line = line(gl_FragCoord.xy, _center, _center+u_resolution.xy/2.0, width);
+    // float full_line = line(gl_FragCoord.xy, _center, _center+u_resolution.xy/2.0, width);
+    float full_line = line(st, _center, _center+u_resolution.xy/2.0, width);
 
     // st = rotate(st, M_PI/2.0);
     
@@ -539,29 +541,18 @@ vec4 simpleLine()
 vec4 simpleLine2()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 toCenter = vec2(0.5)-st;
     vec2 _center = u_resolution.xy/2.0;
     vec2 radius = vec2(1000.0);
-    float width = 0.6;
+    float width = 0.005;
     // Circle relative to center
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    float angle = (u_time/2.0)  * (M_PI * 2.0);
+
+    st  = rotate(st, angle);
     
-    // float full_line = line(new_st, _center-radius, _center+radius, width);
-
-    vec2 new_point_b = _center;
-
-    new_point_b.x =+ u_resolution.x/2.0;
-
-    new_point_b.y =+ u_resolution.y/2.0;
-
-    // vec2 new_point_b = _center+u_resolution.xy/2.0;
-
-    // cart2polar();
-
-    float full_line = line(gl_FragCoord.xy, _center, new_point_b , width);
-
-
-    
-    return vec4(full_line);
+    return vec4(line(st, vec2(0.5), vec2(0.8, 0.5) , width));
 }
 
 
