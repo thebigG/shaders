@@ -538,7 +538,8 @@ vec4 simpleLine()
     return vec4(full_line);
 }
 
-vec4 simpleLine2()
+// Simple rotating line. Looks like a clock hand going forward forever.
+vec4 rotating_line()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 toCenter = vec2(0.5)-st;
@@ -570,8 +571,8 @@ void main()
     // mainImage(outputVec, gl_FragCoord.xy);
     // outputVec = simpleQuarterCircle();
     // outputVec = simpleHalfCircle();
-    outputVec = simpleLine2();
-    // outputVec += simpleLine2();
+    outputVec = rotating_line();
+    // outputVec += rotating_line();
 
     gl_FragColor = outputVec;
 }
