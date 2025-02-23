@@ -549,11 +549,23 @@ vec4 rotating_line()
     // Circle relative to center
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
 
-    float angle = (u_time/2.0)  * (M_PI * 2.0);
+    float angle = (u_time)  * (M_PI / 2.0);
 
+
+    // float theta = mod(180.0*atan(d.y,d.x)/M_PI+angle,360.0);
+    float theta = mod(180.0*atan(st.y,st.x)/M_PI+angle,360.0);
+
+    // float gradient = clamp(angle/(M_PI / 2.0),0.0,1.0);
+
+    vec2 old_st = st;
     st  = rotate(st, angle);
+
+
     
-    return vec4(line(st, vec2(0.5), vec2(0.8, 0.5) , width));
+    // float gradient = 1.0 - (abs(st.y - old_st.y) / abs(st.x - old_st.x));
+    float gradient =   1.0 - (abs(old_st.y - st.y) / abs(old_st.x - st.x));
+
+    return vec4(vec3(line(st, vec2(0.5), vec2(0.8, 0.5) , width)) + (1.0 * gradient) * blue1, 1.0);
 }
 
 
@@ -572,7 +584,6 @@ void main()
     // outputVec = simpleQuarterCircle();
     // outputVec = simpleHalfCircle();
     outputVec = rotating_line();
-    // outputVec += rotating_line();
 
     gl_FragColor = outputVec;
 }
