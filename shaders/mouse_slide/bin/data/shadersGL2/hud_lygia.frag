@@ -39,7 +39,8 @@ uniform float     u_time;                 // shader playback time (in seconds)
 float movingLine(vec2 uv, vec2 center, float radius)
 {
     //angle of the line
-    float theta0 = 90.0 * u_time;
+    // float theta0 = 90.0 * u_time;
+    float theta0 = 90.0;
     vec2 d = uv - center;
     float r = sqrt( dot( d, d ) );
     if(r<radius)
@@ -50,9 +51,14 @@ float movingLine(vec2 uv, vec2 center, float radius)
         float l = length( d - p*clamp( dot(d,p)/dot(p,p), 0.0, 1.0) );
     	d = normalize(d);
         //compute gradient based on angle difference to theta0
-   	 	float theta = mod(180.0*atan(d.y,d.x)/M_PI+theta0,360.0);
+   	 	// float theta = mod(((180.0)*(atan(d.y,d.x))/M_PI+theta0),360.0);
+        float current_angle_in_degrees = ((atan(d.y,d.x))*(180.0)/M_PI);
+        current_angle_in_degrees += theta0;
+        float theta = mod(current_angle_in_degrees,360.0);
         float gradient = clamp(1.0-theta/90.0,0.0,1.0);
-        return SMOOTH(l,1.0)+0.5*gradient;
+        // return SMOOTH(l,1.0)+0.5*gradient;
+        return SMOOTH(l,1.0)+gradient;
+        // return SMOOTH(l,1.0);
     }
     else return 0.0;
 }
@@ -420,8 +426,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
-    // finalColor += movingLine(uv, c, 240.0) * blue3;
-    finalColor += movingLine_lygia(uv, c, 240.0) * blue3;
+    finalColor += movingLine(uv, c, 240.0) * blue3;
+    // finalColor += movingLine_lygia(uv, c, 240.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
@@ -545,27 +551,26 @@ vec4 rotating_line()
     vec2 toCenter = vec2(0.5)-st;
     vec2 _center = u_resolution.xy/2.0;
     vec2 radius = vec2(1000.0);
-    float width = 0.005;
+    float width = 0.0020;
     // Circle relative to center
-    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    float theta0 = 90.0;
+    theta0 = theta0 * u_time;
+    float theta0_rads = theta0 *  (M_PI/180.0);
 
-    float angle = (u_time)  * (M_PI / 2.0);
-
-
-    // float theta = mod(180.0*atan(d.y,d.x)/M_PI+angle,360.0);
-    float theta = mod(180.0*atan(st.y,st.x)/M_PI+angle,360.0);
-
-    // float gradient = clamp(angle/(M_PI / 2.0),0.0,1.0);
+    vec2 d = st - vec2(0.5);
 
     vec2 old_st = st;
-    st  = rotate(st, angle);
+    st  = rotate(st, theta0_rads);
+    vec3 rotated_line_b = (vec3(line(st, vec2(0.5), vec2(0.8, 0.5) , width)));
+    
+    float current_angle_in_degrees = ((atan(d.y,d.x))*(180.0)/M_PI);
+    current_angle_in_degrees += theta0;
+    float theta = mod(current_angle_in_degrees,360.0);
+    float gradient = clamp(1.0-theta/90.0,0.0,1.0);
 
 
     
-    // float gradient = 1.0 - (abs(st.y - old_st.y) / abs(st.x - old_st.x));
-    float gradient =   1.0 - (abs(old_st.y - st.y) / abs(old_st.x - st.x));
-
-    return vec4(vec3(line(st, vec2(0.5), vec2(0.8, 0.5) , width)) + (1.0 * gradient) * blue1, 1.0);
+    return vec4((vec3(rotated_line_b )) +(  gradient * blue1) , 1.0);
 }
 
 
@@ -580,7 +585,7 @@ void main()
     float y_offset = 0.5;
     
     float t = tri(st, 0.1);
-    // mainImage(outputVec, gl_FragCoord.xy);
+    mainImage(outputVec, gl_FragCoord.xy);
     // outputVec = simpleQuarterCircle();
     // outputVec = simpleHalfCircle();
     outputVec = rotating_line();
