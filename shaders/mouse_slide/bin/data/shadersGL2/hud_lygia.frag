@@ -548,7 +548,6 @@ vec4 simpleLine()
 vec4 rotating_line()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
-    vec2 toCenter = vec2(0.5)-st;
     vec2 _center = u_resolution.xy/2.0;
     vec2 radius = vec2(1000.0);
     float width = 0.0020;
@@ -557,15 +556,20 @@ vec4 rotating_line()
     theta0 = theta0 * u_time;
     float theta0_rads = theta0 *  (M_PI/180.0);
 
-    vec2 d = st - vec2(0.5);
+    vec2 center  = vec2(0.5);
+
+    vec2 d = st - center;
 
     vec2 old_st = st;
-    st  = rotate(st, theta0_rads);
-    vec3 rotated_line_b = (vec3(line(st, vec2(0.5), vec2(0.8, 0.5) , width)));
+    st  = rotate(st, theta0_rads, center);
+    vec3 rotated_line_b = (vec3(line(st, center, vec2(0.8, center.y) , width)));
+
+    float angle_before_rotation = atan(d.y,d.x);
     
-    float current_angle_in_degrees = ((atan(d.y,d.x))*(180.0)/M_PI);
-    current_angle_in_degrees += theta0;
-    float theta = mod(current_angle_in_degrees,360.0);
+    float angle_before_rotation_in_degrees = (angle_before_rotation)*((180.0)/M_PI);
+    // Add how many degrees we have rotated the line by  (theta0)
+    float angle_after_rotation_in_degrees = angle_before_rotation_in_degrees +  theta0;
+    float theta = mod(angle_after_rotation_in_degrees,360.0);
     float gradient = clamp(1.0-theta/90.0,0.0,1.0);
 
 
