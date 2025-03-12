@@ -457,7 +457,7 @@ precision mediump float;
 #include "../../../../../lygia/space/ratio.glsl"
 #include "../../../../../lygia/space/rotate.glsl"
 #include "../../../../../lygia/space/cart2polar.glsl"
-#include "../../../../../lygia/math/decimate.glsl"
+#include "../../../../../lygia/math/map.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
 
@@ -548,13 +548,14 @@ vec4 simpleLine()
 vec4 rotating_line()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
-    vec2 _center = u_resolution.xy/2.0;
-    vec2 radius = vec2(1000.0);
+
     float width = 0.0020;
     // Circle relative to center
     float theta0 = 90.0;
     theta0 = theta0 * u_time;
     float theta0_rads = theta0 *  (M_PI/180.0);
+
+    float radius = 0.3;
 
     vec2 center  = vec2(0.5);
 
@@ -562,7 +563,7 @@ vec4 rotating_line()
 
     vec2 old_st = st;
     st  = rotate(st, theta0_rads, center);
-    vec3 rotated_line_b = (vec3(line(st, center, vec2(0.8, center.y) , width)));
+    vec3 rotated_line_b = (vec3(line(st, center, vec2(center.x + radius, center.y) , width)));
 
     float angle_before_rotation = atan(d.y,d.x);
     
@@ -572,9 +573,15 @@ vec4 rotating_line()
     float theta = mod(angle_after_rotation_in_degrees,360.0);
     float gradient = clamp(1.0-theta/90.0,0.0,1.0);
 
+    float current_radius = length(d);
+    if(current_radius > radius)
+    {
+        gradient *= 0.0;
+    }
+
 
     
-    return vec4((vec3(rotated_line_b )) +(  gradient * blue1) , 1.0);
+    return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
 
 
