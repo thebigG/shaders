@@ -9,6 +9,17 @@
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#include "../../../../../lygia/space/ratio.glsl"
+#include "../../../../../lygia/space/rotate.glsl"
+#include "../../../../../lygia/space/cart2polar.glsl"
+#include "../../../../../lygia/math/map.glsl"
+#include "../../../../../lygia/draw/circle.glsl"
+#include "../../../../../lygia/draw/line.glsl"
+
 
 
 
@@ -65,23 +76,40 @@ float movingLine(vec2 uv, vec2 center, float radius)
 
 float movingLine_lygia(vec2 uv, vec2 center, float radius)
 {
-    //angle of the line
-    float theta0 = 90.0 * u_time;
-    vec2 d = uv - center;
-    float r = sqrt( dot( d, d ) );
-    if(r<radius)
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    float width = 0.0020;
+    // Circle relative to center
+    float theta0 = 90.0;
+    theta0 = theta0 * u_time;
+    float theta0_rads = theta0 *  (M_PI/180.0);
+
+    // float radius = 0.3;
+
+    // vec2 center  = vec2(0.5);
+
+    vec2 d = st - center;
+
+    vec2 old_st = st;
+    st  = rotate(st, theta0_rads, center);
+    // vec3 rotated_line_b = (vec3(line(st, center, vec2(center.x + radius, center.y) , width)));
+    float rotated_line_b = line(st, center, vec2(center.x + radius, center.y) , width);
+
+    float angle_before_rotation = atan(d.y,d.x);
+    
+    float angle_before_rotation_in_degrees = (angle_before_rotation)*((180.0)/M_PI);
+    // Add how many degrees we have rotated the line by  (theta0)
+    float angle_after_rotation_in_degrees = angle_before_rotation_in_degrees +  theta0;
+    float theta = mod(angle_after_rotation_in_degrees,360.0);
+    float gradient = clamp(1.0-theta/90.0,0.0,1.0);
+
+    float current_radius = length(d);
+    if(current_radius > radius)
     {
-        //compute the distance to the line theta=theta0
-        vec2 p = radius*vec2(cos(theta0*M_PI/180.0),
-                            -sin(theta0*M_PI/180.0));
-        float l = length( d - p*clamp( dot(d,p)/dot(p,p), 0.0, 1.0) );
-    	d = normalize(d);
-        //compute gradient based on angle difference to theta0
-   	 	float theta = mod(180.0*atan(d.y,d.x)/M_PI+theta0,360.0);
-        float gradient = clamp(1.0-theta/90.0,0.0,1.0);
-        return SMOOTH(l,1.0)+0.5*gradient;
+        gradient *= 0.0;
     }
-    else return 0.0;
+    return rotated_line_b  +( gradient ) ;
+    // return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
 
 // float circle(vec2 uv, vec2 center, float radius, float width)
@@ -426,8 +454,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
-    finalColor += movingLine(uv, c, 240.0) * blue3;
-    // finalColor += movingLine_lygia(uv, c, 240.0) * blue3;
+    // finalColor += movingLine(uv, c, 240.0) * blue3;
+    finalColor += movingLine_lygia(uv, vec2(0.5), 0.2) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
@@ -449,17 +477,6 @@ vec2 translate(vec2 uv, vec2 offset) {
     return uv - offset;
 }
 
-
-#ifdef GL_ES
-precision mediump float;
-#endif
-
-#include "../../../../../lygia/space/ratio.glsl"
-#include "../../../../../lygia/space/rotate.glsl"
-#include "../../../../../lygia/space/cart2polar.glsl"
-#include "../../../../../lygia/math/map.glsl"
-#include "../../../../../lygia/draw/circle.glsl"
-#include "../../../../../lygia/draw/line.glsl"
 
 vec4 simpleCircle(void) {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -578,8 +595,6 @@ vec4 rotating_line()
     {
         gradient *= 0.0;
     }
-
-
     
     return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
@@ -599,7 +614,7 @@ void main()
     mainImage(outputVec, gl_FragCoord.xy);
     // outputVec = simpleQuarterCircle();
     // outputVec = simpleHalfCircle();
-    outputVec = rotating_line();
+    // outputVec = rotating_line();
 
     gl_FragColor = outputVec;
 }
