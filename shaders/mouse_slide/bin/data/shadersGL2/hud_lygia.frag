@@ -74,9 +74,45 @@ float movingLine(vec2 uv, vec2 center, float radius)
     else return 0.0;
 }
 
+//Looks like a radar line
 float movingLine_lygia(vec2 uv, vec2 center, float radius)
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    float width = 0.0020;
+    // Circle relative to center
+    float theta0 = 270.0;
+    // theta0 = theta0 * u_time;
+    float theta0_rads = theta0 *  (M_PI/180.0);
+
+    vec2 d = st - center;
+
+    vec2 old_st = st;
+    st  = rotate(st, theta0_rads, center);
+    float rotated_line_b = line(st, center, vec2(center.x + radius, center.y) , width);
+
+    float angle_before_rotation = atan(d.y,d.x);
+    
+    float angle_before_rotation_in_degrees = (angle_before_rotation)*((180.0)/M_PI);
+    // Add how many degrees we have rotated the line by  (theta0)
+    float angle_after_rotation_in_degrees = angle_before_rotation_in_degrees +  theta0;
+    float theta = mod(angle_after_rotation_in_degrees,360.0);
+    float gradient = clamp(1.0-theta/90.0,0.0,1.0);
+
+    float current_radius = length(d);
+    if(current_radius > radius)
+    {
+        gradient *= 0.0;
+    }
+    return rotated_line_b  +( gradient ) ;
+    // return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
+}
+
+// Same as movingLine_lygia but it uses gl_FragCoord.xy so it is NOT relative (it is using absolute coords)
+float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
+{
+    // vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 st = gl_FragCoord.xy;
 
     float width = 0.0020;
     // Circle relative to center
@@ -84,15 +120,10 @@ float movingLine_lygia(vec2 uv, vec2 center, float radius)
     theta0 = theta0 * u_time;
     float theta0_rads = theta0 *  (M_PI/180.0);
 
-    // float radius = 0.3;
-
-    // vec2 center  = vec2(0.5);
-
     vec2 d = st - center;
 
     vec2 old_st = st;
     st  = rotate(st, theta0_rads, center);
-    // vec3 rotated_line_b = (vec3(line(st, center, vec2(center.x + radius, center.y) , width)));
     float rotated_line_b = line(st, center, vec2(center.x + radius, center.y) , width);
 
     float angle_before_rotation = atan(d.y,d.x);
@@ -455,7 +486,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
     // finalColor += movingLine(uv, c, 240.0) * blue3;
-    finalColor += movingLine_lygia(uv, vec2(0.5), 0.2) * blue3;
+    // finalColor += movingLine_lygia(uv, vec2(0.5), 0.31) * blue3;
+    finalColor += movingLine_absolute_lygia(uv, c, 2400.0/10.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
     // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
