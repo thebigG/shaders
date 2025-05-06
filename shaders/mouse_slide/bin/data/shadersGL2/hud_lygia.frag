@@ -87,7 +87,6 @@ float movingLine_lygia(vec2 uv, vec2 center, float radius)
 
     vec2 d = st - center;
 
-    vec2 old_st = st;
     st  = rotate(st, theta0_rads, center);
     float rotated_line_b = line(st, center, vec2(center.x + radius, center.y) , width);
 
@@ -122,7 +121,6 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
 
     vec2 d = st - center;
 
-    vec2 old_st = st;
     st  = rotate(st, theta0_rads, center);
     float rotated_line_b = line(st, center, vec2(center.x + radius, center.y) , width);
 
