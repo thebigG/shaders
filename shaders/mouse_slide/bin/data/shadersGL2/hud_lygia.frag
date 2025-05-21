@@ -47,33 +47,6 @@ uniform float     u_time;                 // shader playback time (in seconds)
 
 #define MOV(a,b,c,d,t) (vec2(a*cos(t)+b*cos(0.1*(t)), c*sin(t)+d*cos(0.1*(t))))
 
-float movingLine(vec2 uv, vec2 center, float radius)
-{
-    //angle of the line
-    // float theta0 = 90.0 * u_time;
-    float theta0 = 90.0;
-    vec2 d = uv - center;
-    float r = sqrt( dot( d, d ) );
-    if(r<radius)
-    {
-        //compute the distance to the line theta=theta0
-        vec2 p = radius*vec2(cos(theta0*M_PI/180.0),
-                            -sin(theta0*M_PI/180.0));
-        float l = length( d - p*clamp( dot(d,p)/dot(p,p), 0.0, 1.0) );
-    	d = normalize(d);
-        //compute gradient based on angle difference to theta0
-   	 	// float theta = mod(((180.0)*(atan(d.y,d.x))/M_PI+theta0),360.0);
-        float current_angle_in_degrees = ((atan(d.y,d.x))*(180.0)/M_PI);
-        current_angle_in_degrees += theta0;
-        float theta = mod(current_angle_in_degrees,360.0);
-        float gradient = clamp(1.0-theta/90.0,0.0,1.0);
-        // return SMOOTH(l,1.0)+0.5*gradient;
-        return SMOOTH(l,1.0)+gradient;
-        // return SMOOTH(l,1.0);
-    }
-    else return 0.0;
-}
-
 //Looks like a radar line
 float movingLine_lygia(vec2 uv, vec2 center, float radius)
 {
@@ -104,13 +77,11 @@ float movingLine_lygia(vec2 uv, vec2 center, float radius)
         gradient *= 0.0;
     }
     return rotated_line_b  +( gradient ) ;
-    // return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
 
 // Same as movingLine_lygia but it uses gl_FragCoord.xy so it is NOT relative (it is using absolute coords)
 float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
 {
-    // vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 st = gl_FragCoord.xy;
 
     float width = 0.0020;
@@ -137,20 +108,8 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
     {
         gradient *= 0.0;
     }
-    return rotated_line_b  +( gradient ) ;
-    // return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
+    return rotated_line_b  + (gradient) ;
 }
-
-// float circle(vec2 uv, vec2 center, float radius, float width)
-// {
-//     // float r = length(uv - center);
-//     // return SMOOTH(r-width/2.0,radius)-SMOOTH(r+width/2.0,radius);
-
-//     // vec2 st = gl_FragCoord.xy/u_resolution.xy;
-//     vec2 st = gl_FragCoord.xy;
-    
-//     return circle(st, 0.5, 0.001);
-// }
  
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
@@ -398,15 +357,6 @@ float circle3_t_and_b_arcs_lygia(vec2 uv, vec2 center, float radius, float width
 
 }
 
-// float triangles(vec2 uv, vec2 center, float radius)
-// {
-//     vec2 d = uv - center;
-//         return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
-//          + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
-//          + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
-//          + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
-// }
-
 float triangles(vec2 uv, vec2 center, float radius)
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -416,21 +366,6 @@ float triangles(vec2 uv, vec2 center, float radius)
     st = rotate(st, M_PI/2.0);
     
     return tri(st, 0.020);
-}
-
-
-
-float triangles_lygia(vec2 uv, vec2 center, float radius)
-{
-    vec2 d = uv - center;
-        // return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
-        //  + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
-        //  + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
-        //  + RS( 0.0, 8.0, d.y+radius) * (1.0-smoothstep( 7.0-d.y-radius,9.0-d.y-radius, abs(d.x)));
-    // return RS(-8.0, 0.0, d.x-radius) * (1.0-smoothstep( 7.0+d.x-radius,9.0+d.x-radius, abs(d.y)))
-    //      + RS( 0.0, 8.0, d.x+radius) * (1.0-smoothstep( 7.0-d.x-radius,9.0-d.x-radius, abs(d.y)))
-    //      + RS(-8.0, 0.0, d.y-radius) * (1.0-smoothstep( 7.0+d.y-radius,9.0+d.y-radius, abs(d.x)))
-         return tri(uv, 0.9);
 }
 
 float _cross(vec2 uv, vec2 center, float radius)
@@ -478,16 +413,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += ( circle(uv, c, 1000.0, 0.001)
                   + circle(uv, c, 1650.0, 0.001) ) * blue1;
     finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
-    // finalColor += circle3(uv, c, 313.0, 4.0) * blue1;
     finalColor += circle3_l_and_r_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1; // left and right arcs
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
-    // finalColor += triangles(gl_FragCoord.xy, c, 0.0 + 30.0*sin(u_time)) * blue2;
     finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
-    // finalColor += movingLine(uv, c, 240.0) * blue3;
-    // finalColor += movingLine_lygia(uv, vec2(0.5), 0.31) * blue3;
     finalColor += movingLine_absolute_lygia(uv, c, 2400.0/10.0) * blue3;
     finalColor += circle(uv, c, 100.0, 0.01) * blue3;
-    // finalColor += 0.7 * circle2(uv, c, 262.0, 1.0, 0.5+0.2*cos(u_time)) * blue3;
+    
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
     if( length(uv-c) < 240.0 )
     {
@@ -581,12 +512,8 @@ vec4 simpleLine()
     // Circle relative to center
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
     st = rotate(st, M_PI/2.0);
-    // float full_line = line(new_st, _center-radius, _center+radius, width);
-
-    // float full_line = line(gl_FragCoord.xy, _center, _center+u_resolution.xy/2.0, width);
     float full_line = line(st, _center, _center+u_resolution.xy/2.0, width);
 
-    // st = rotate(st, M_PI/2.0);
     
     return vec4(full_line);
 }
@@ -642,9 +569,6 @@ void main()
     
     float t = tri(st, 0.1);
     mainImage(outputVec, gl_FragCoord.xy);
-    // outputVec = simpleQuarterCircle();
-    // outputVec = simpleHalfCircle();
-    // outputVec = rotating_line();
 
     gl_FragColor = outputVec;
 }
