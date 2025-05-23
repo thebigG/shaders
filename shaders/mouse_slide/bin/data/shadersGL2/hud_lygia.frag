@@ -113,7 +113,6 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
  
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 _center = u_resolution.xy/2.0;
     // Circle relative to center
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
@@ -555,8 +554,6 @@ vec4 rotating_line()
     
     return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
-
-
 
 void main()
 {
