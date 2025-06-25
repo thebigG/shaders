@@ -111,12 +111,13 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
     return rotated_line_b  + (gradient) ;
 }
  
+//  Adds a 0.15 scailing to the actual size of the circle.
 float circle(vec2 uv, vec2 center, float radius, float width)
 {
-    vec2 _center = u_resolution.xy/2.0;
     // Circle relative to center
-    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    vec2 new_st = smoothstep(center-radius, center+radius, gl_FragCoord.xy);
     
+    // TODO:Don't love the "0.15" scaling here...
     return circle(new_st, 0.15, width);
 }
 
@@ -356,19 +357,76 @@ float circle3_t_and_b_arcs_lygia(vec2 uv, vec2 center, float radius, float width
 
 }
 
-float triangles(vec2 xy, vec2 center, float x_offset)
+float left_triangle(vec2 xy, vec2 center)
 {
-    vec2 st = xy/u_resolution.xy;
-
-    gl_FragCoord.x += x_offset;
-
-    vec2 radius = vec2(1000.0);
-
-    vec2 new_st = smoothstep(center-radius, center+radius, gl_FragCoord.xy);
+    vec2 radius = vec2(10.0);
+    // Move the center 300 pixels which is about where outer most arc is, relative to center.
+    center.x -= 300.00;
+    // Move back and forth from the new center
+    xy.x += 30.0 * ((sin(u_time)));
+    
+    // Ensure our st is position at center, but its size is controlled by "radius"
+    vec2 new_st = smoothstep(center-radius, center+radius, xy);
 
     new_st = rotate(new_st, M_PI/2.0);
     
-    return tri(new_st, 0.020);
+    return tri(new_st, 1.00);
+}
+
+float right_triangle(vec2 xy, vec2 center)
+{
+    vec2 radius = vec2(10.0);
+    // Move the center 300 pixels which is about where outer most arc is, relative to center.
+    center.x += 300.00;
+    // Move back and forth from the new center
+    xy.x -= 30.0 * ((sin(u_time)));
+    
+    // Ensure our st is position at center, but its size is controlled by "radius"
+    vec2 new_st = smoothstep(center-radius, center+radius, xy);
+
+    new_st = rotate(new_st, -M_PI/2.0);
+    
+    return tri(new_st, 1.00);
+}
+
+float top_triangle(vec2 xy, vec2 center)
+{
+    vec2 radius = vec2(10.0);
+    // Move the center 300 pixels which is about where outer most arc is, relative to center.
+    center.y += 300.00;
+    // Move back and forth from the new center
+    xy.y -= 30.0 * ((sin(u_time)));
+    
+    // Ensure our st is position at center, but its size is controlled by "radius"
+    vec2 new_st = smoothstep(center-radius, center+radius, xy);
+
+    new_st = rotate(new_st, M_PI);
+    
+    return tri(new_st, 1.00);
+}
+
+float bottom_triangle(vec2 xy, vec2 center)
+{
+    vec2 radius = vec2(10.0);
+    // Move the center 300 pixels which is about where outer most arc is, relative to center.
+    center.y -= 300.00;
+    // Move back and forth from the new center
+    xy.y += 30.0 * ((sin(u_time)));
+    
+    // Ensure our st is position at center, but its size is controlled by "radius"
+    vec2 new_st = smoothstep(center-radius, center+radius, xy);
+
+    // new_st = rotate(new_st, M_PI);
+    
+    return tri(new_st, 1.00);
+}
+
+float triangles(vec2 xy, vec2 center)
+{
+    return  left_triangle(xy, center) 
+          + right_triangle(xy, center)
+          + top_triangle(xy, center) 
+          + bottom_triangle(xy, center);
 }
 
 float _cross(vec2 uv, vec2 center, float radius)
@@ -413,14 +471,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //center of the image
     vec2 c = u_resolution.xy/2.0;
     // finalColor = vec3( 0.3*_cross(uv, c, 240.0) );
-    finalColor += ( circle(uv, c, 1000.0, 0.001)
-                  + circle(uv, c, 1650.0, 0.001) ) * blue1;
-    finalColor += (circle(uv, c, 2400.0, 0.001) );//+ dots(uv,c,240.0)) * blue4;
+    finalColor += ( circle(uv, c, 150.0*(20.0/3.0), 0.001)
+                  + circle(uv, c, 248.0*(20.0/3.0), 0.001) ) * blue1;
+    finalColor += (circle(uv, c, 360.0*(20.0/3.0), 0.001) );//+ dots(uv,c,240.0)) * blue4;
     finalColor += circle3_l_and_r_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1; // left and right arcs
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
-    finalColor += triangles(gl_FragCoord.xy, c, 0.0 + ((sin(u_time)) + 1.0)/4.0) * red;
+    finalColor += triangles(gl_FragCoord.xy, c);
     finalColor += movingLine_absolute_lygia(uv, c, 2400.0/10.0) * blue3;
-    finalColor += circle(uv, c, 100.0, 0.01) * blue3;
+    finalColor += circle(uv, c, 15.0*(20.0/3.0), 0.01) * blue3;
     
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
     if( length(uv-c) < 240.0 )
