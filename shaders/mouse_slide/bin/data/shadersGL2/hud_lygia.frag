@@ -356,15 +356,19 @@ float circle3_t_and_b_arcs_lygia(vec2 uv, vec2 center, float radius, float width
 
 }
 
-float triangles(vec2 uv, vec2 center, float radius)
+float triangles(vec2 xy, vec2 center, float x_offset)
 {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 st = xy/u_resolution.xy;
 
-    st.x += radius;
+    gl_FragCoord.x += x_offset;
 
-    st = rotate(st, M_PI/2.0);
+    vec2 radius = vec2(1000.0);
+
+    vec2 new_st = smoothstep(center-radius, center+radius, gl_FragCoord.xy);
+
+    new_st = rotate(new_st, M_PI/2.0);
     
-    return tri(st, 0.020);
+    return tri(new_st, 0.020);
 }
 
 float _cross(vec2 uv, vec2 center, float radius)
@@ -555,6 +559,16 @@ vec4 rotating_line()
     return vec4((vec3(rotated_line_b ))  +(  gradient * blue1) , 1.0);
 }
 
+float triangles_absolute()
+{
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0);
+
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    return tri(new_st, 0.020);
+}
+
 void main()
 {
     vec4 outputVec = vec4(0.5);
@@ -564,10 +578,8 @@ void main()
     float x_offset = 0.8;
     float y_offset = 0.5;
     
-    float t = tri(st, 0.1);
+    vec4 t = vec4(triangles_absolute());
     mainImage(outputVec, gl_FragCoord.xy);
 
     gl_FragColor = outputVec;
 }
-
-
