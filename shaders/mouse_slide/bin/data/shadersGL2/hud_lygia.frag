@@ -110,6 +110,25 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
     }
     return rotated_line_b  + (gradient) ;
 }
+
+//
+float line_absolute_lygia(vec2 uv, vec2 center, float radius)
+{
+    vec2 st = gl_FragCoord.xy;
+
+    float width = 0.500;
+    // Circle relative to center
+    float theta0 = 45.0;
+    // theta0 = theta0 * u_time;
+    float theta0_rads = theta0 *  (M_PI/180.0);
+
+    st  = rotate(st, theta0_rads, center);
+    float rotated_line_right_bottom = line(st, center, vec2(center.x + radius, center.y), width);
+    float rotated_line_right_top = line(st, center, vec2(center.x - radius, center.y), width);
+    
+    float rotated_line_left_bottom = line(st, center, vec2(center.x - radius, center.y), width);
+    return rotated_line_right_bottom + rotated_line_right_top;
+}
  
 //  Adds a 0.15 scailing to the actual size of the circle.
 float circle(vec2 uv, vec2 center, float radius, float width)
@@ -238,7 +257,7 @@ bool is_uv_in_gap_x(vec2 uv, vec2 center, float gap)
 }
 
 // Draws a circle, but "carves out" the left and right side. Making arcs instead of the circle.
-// Each arc has a hap in the middle.
+// Each arc has a gap in the middle.
 float circle3_l_and_r_arcs_lygia(vec2 uv, vec2 center, float radius, float width)
 {
     float opening  = 0.04;
@@ -477,7 +496,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     finalColor += circle3_l_and_r_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1; // left and right arcs
     finalColor += circle3_t_and_b_arcs_lygia(uv, c, 3000.0, 0.0020) * blue1 * 0.5; // top and bottom arcs
     finalColor += triangles(gl_FragCoord.xy, c);
-    finalColor += movingLine_absolute_lygia(uv, c, 2400.0/10.0) * blue3;
+    finalColor += movingLine_absolute_lygia(uv, c, 240.00) * blue3;
+    finalColor += line_absolute_lygia(uv, c, 240.00);
     finalColor += circle(uv, c, 15.0*(20.0/3.0), 0.01) * blue3;
     
     finalColor += 0.7 * circle2_lygia(uv, c, 870.000 * 3.00, 0.000725, smoothstep(-1.0,1.0,  cos(u_time)) + 0.6 ) * blue3;
