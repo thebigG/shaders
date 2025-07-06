@@ -7,6 +7,7 @@
 #include "../../../../../lygia/space/ratio.glsl"
 #include "../../../../../lygia/space/rotate.glsl"
 #include "../../../../../lygia/math/decimate.glsl"
+#include "../../../../../lygia/math/radians.gsl"
 #include "../../../../../lygia/draw/circle.glsl"
 
 #ifdef GL_ES
@@ -19,6 +20,7 @@ precision mediump float;
 #include "../../../../../lygia/math/map.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
+
 
 
 
@@ -114,20 +116,21 @@ float movingLine_absolute_lygia(vec2 uv, vec2 center, float radius)
 //
 float line_absolute_lygia(vec2 uv, vec2 center, float radius)
 {
-    vec2 st = gl_FragCoord.xy;
-
-    float width = 0.500;
+    float width = 0.100;
     // Circle relative to center
     float theta0 = 45.0;
-    // theta0 = theta0 * u_time;
     float theta0_rads = theta0 *  (M_PI/180.0);
 
-    st  = rotate(st, theta0_rads, center);
-    float rotated_line_right_bottom = line(st, center, vec2(center.x + radius, center.y), width);
-    float rotated_line_right_top = line(st, center, vec2(center.x - radius, center.y), width);
+    uv  = rotate(uv, theta0_rads, center);
+    float rotated_line_right_bottom = line(uv, center, vec2(center.x + radius, center.y), width);
+    float rotated_line_left_top = line(uv, center, vec2(center.x - radius, center.y), width);
     
-    float rotated_line_left_bottom = line(st, center, vec2(center.x - radius, center.y), width);
-    return rotated_line_right_bottom + rotated_line_right_top;
+    uv  = rotate(uv, theta0_rads*2.00, center);
+
+    float rotated_line_left_bottom = line(uv, center, vec2(center.x + radius, center.y), width);
+    float rotated_line_right_top = line(uv, center, vec2(center.x - radius, center.y), width);
+    
+    return rotated_line_right_bottom + rotated_line_left_top + rotated_line_left_bottom + rotated_line_right_top;
 }
  
 //  Adds a 0.15 scailing to the actual size of the circle.
