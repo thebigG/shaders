@@ -20,6 +20,7 @@ precision mediump float;
 #include "../../../../../lygia/math/map.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
+#include "../../../../../lygia/generative/snoise.glsl"
 
 
 
@@ -486,6 +487,25 @@ float bip2(vec2 uv, vec2 center)
         + SMOOTH(6.0,r)-SMOOTH(8.0,r)
         + smoothstep(max(8.0,R-20.0),R,r)-SMOOTH(R,r);
 }
+
+float bip1_lygia(vec2 uv, vec2 center)
+{
+    float radius = 100.00;
+    // center.x += (100.00 * sin(u_time/4.00));
+    center.x += ((100.00 * snoise(vec3(u_time))));
+    // center.y += (100.00 * sin(u_time/4.00));
+
+    float x = snoise( vec2(u_time * speed, 0.0) );
+    float y = snoise( vec2(u_time * speed, 100.0) );
+
+    // Optional: Map to range
+    x = 0.5 + 0.5 * x;
+    y = 0.5 + 0.5 * y;
+
+    vec2 new_st = smoothstep(center-radius, center+radius, uv);
+   
+   return circle(new_st, 0.00000000000001, 0.1);
+}
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec3 finalColor;
@@ -513,9 +533,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         finalColor += bip1(uv, c+p) * vec3(1,1,1);
         p = 50.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
         finalColor += bip2(uv,c+p) * red;
+        finalColor += bip1_lygia(uv, c);
     }
 
-    fragColor = vec4( finalColor, 1.0 );
+    fragColor = vec4(finalColor, 1.0);
 }
 
 vec2 translate(vec2 uv, vec2 offset) {
