@@ -5,7 +5,7 @@ void ofApp::setup(){
 	if(ofIsGLProgrammableRenderer()){
 		// shader.load("shadersGL3/shader");
 	}else{
-		shader.load("shadersGL2/shader");
+		shader.load("shadersGL2/hud_lygia");
 	}
 }
 
@@ -39,7 +39,10 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    if (key == 'q' && ofGetKeyPressed(OF_KEY_CONTROL)) {
+        ofLog() << "CTRL+Q pressed. Quitting...";
+        ofExit();
+    }
 }
 
 //--------------------------------------------------------------
