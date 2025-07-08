@@ -21,6 +21,7 @@ precision mediump float;
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
 #include "../../../../../lygia/generative/snoise.glsl"
+#include "../../../../../lygia/generative/worley.glsl"
 
 
 
@@ -42,11 +43,12 @@ uniform float     u_time;                 // shader playback time (in seconds)
 #define RS(a,b,x) ( smoothstep(a-1.0,a+1.0,x)*(1.0-smoothstep(b-1.0,b+1.0,x)) )
 #define M_PI 3.1415926535897932384626433832795
 
-#define blue1 vec3(0.74,0.95,1.00)
-#define blue2 vec3(0.87,0.98,1.00)
-#define blue3 vec3(0.35,0.76,0.83)
-#define blue4 vec3(0.953,0.969,0.89)
-#define red   vec3(1.00,0.38,0.227)
+#define blue1  vec3(0.74,0.95,1.00)
+#define blue2  vec3(0.87,0.98,1.00)
+#define blue3  vec3(0.35,0.76,0.83)
+#define blue4  vec3(0.953,0.969,0.89)
+#define red    vec3(1.00,0.38,0.227)
+#define green1 vec3(0.74,1.00,0.20)
 
 #define MOV(a,b,c,d,t) (vec2(a*cos(t)+b*cos(0.1*(t)), c*sin(t)+d*cos(0.1*(t))))
 
@@ -491,17 +493,8 @@ float bip2(vec2 uv, vec2 center)
 float bip1_lygia(vec2 uv, vec2 center)
 {
     float radius = 100.00;
-    // center.x += (100.00 * sin(u_time/4.00));
-    center.x += ((100.00 * snoise(vec3(u_time))));
-    // center.y += (100.00 * sin(u_time/4.00));
-
-    float x = snoise( vec2(u_time * speed, 0.0) );
-    float y = snoise( vec2(u_time * speed, 100.0) );
-
-    // Optional: Map to range
-    x = 0.5 + 0.5 * x;
-    y = 0.5 + 0.5 * y;
-
+    vec2 w = worley2(vec3(u_time * 0.1));
+    center += (300.00 * w);
     vec2 new_st = smoothstep(center-radius, center+radius, uv);
    
    return circle(new_st, 0.00000000000001, 0.1);
@@ -533,7 +526,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         finalColor += bip1(uv, c+p) * vec3(1,1,1);
         p = 50.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
         finalColor += bip2(uv,c+p) * red;
-        finalColor += bip1_lygia(uv, c);
+        finalColor += bip1_lygia(uv, c) * green1;
     }
 
     fragColor = vec4(finalColor, 1.0);
