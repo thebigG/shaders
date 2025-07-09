@@ -49,6 +49,7 @@ uniform float     u_time;                 // shader playback time (in seconds)
 #define blue4  vec3(0.953,0.969,0.89)
 #define red    vec3(1.00,0.38,0.227)
 #define green1 vec3(0.74,1.00,0.20)
+#define green2 vec3(0.00,1.00,0.00)
 
 #define MOV(a,b,c,d,t) (vec2(a*cos(t)+b*cos(0.1*(t)), c*sin(t)+d*cos(0.1*(t))))
 
@@ -440,8 +441,6 @@ float bottom_triangle(vec2 xy, vec2 center)
     
     // Ensure our st is position at center, but its size is controlled by "radius"
     vec2 new_st = smoothstep(center-radius, center+radius, xy);
-
-    // new_st = rotate(new_st, M_PI);
     
     return tri(new_st, 1.00);
 }
@@ -477,10 +476,26 @@ float dots(vec2 uv, vec2 center, float radius)
     else
 	    return 0.0;
 }
+
 float bip1(vec2 uv, vec2 center)
 {
     return SMOOTH(length(uv - center),3.0);
 }
+
+vec3 ripple_circle(vec2 uv)
+{
+    vec2 st = uv/u_resolution.xy;
+    // vec2 w = worley2(vec3(u_time * 0.1));
+    vec2 _center = u_resolution.xy/2.0;
+    float remappedSin =  mod(map(sin(u_time), -1.0, 1.0, 0.0, 1.0), 0.5);
+    vec2 radius = vec2(200.0) * mod(u_time, 2.0);
+    float width = 0.03;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    
+    return vec3(circle(new_st, 0.15, width));
+}
+
 float bip2(vec2 uv, vec2 center)
 {
     float r = length(uv - center);
@@ -527,6 +542,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         p = 50.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
         finalColor += bip2(uv,c+p) * red;
         finalColor += bip1_lygia(uv, c) * green1;
+
+        finalColor += ripple_circle(uv) * green2;
     }
 
     fragColor = vec4(finalColor, 1.0);
@@ -664,6 +681,18 @@ float triangles_absolute()
     return tri(new_st, 0.020);
 }
 
+vec3 ripple_circle()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    vec2 radius = vec2(1000.0) * sin(u_time);
+    float width = 0.03;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    
+    return vec3(circle(new_st, 0.15, width));
+}
+
 void main()
 {
     vec4 outputVec = vec4(0.5);
@@ -673,7 +702,7 @@ void main()
     float x_offset = 0.8;
     float y_offset = 0.5;
     
-    vec4 t = vec4(triangles_absolute());
+    // vec4 t = ripple_circle();
     mainImage(outputVec, gl_FragCoord.xy);
 
     gl_FragColor = outputVec;
