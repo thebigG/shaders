@@ -9,6 +9,10 @@
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/math/radians.gsl"
 #include "../../../../../lygia/draw/circle.glsl"
+#include "../../../../../lygia/draw/char.glsl"
+#include "../../../../../lygia/draw/fill.glsl"
+#include "../../../../../lygia/draw/stroke.glsl"
+#include "../../../../../lygia/sdf/circleSDF.glsl"
 
 #ifdef GL_ES
 precision mediump float;
@@ -20,6 +24,7 @@ precision mediump float;
 #include "../../../../../lygia/math/map.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 #include "../../../../../lygia/draw/line.glsl"
+#include "../../../../../lygia/draw/digits.glsl"
 #include "../../../../../lygia/generative/snoise.glsl"
 #include "../../../../../lygia/generative/worley.glsl"
 
@@ -502,7 +507,7 @@ float bip2(vec2 uv, vec2 center)
     float R = 8.0+mod(87.0*u_time, 80.0);
     return (0.5-0.5*cos(30.0*u_time)) * SMOOTH(r,5.0)
         + SMOOTH(6.0,r)-SMOOTH(8.0,r)
-        + smoothstep(max(8.0,R-20.0),R,r)-SMOOTH(R,r);
+        + smoothstep( (8.0,R-20.0),R,r)-SMOOTH(R,r);
 }
 
 float bip1_lygia(vec2 uv, vec2 center)
@@ -540,7 +545,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         p = 130.0*MOV(0.9,-1.1,1.7,0.8,-2.0+sin(0.1*u_time)+0.15*u_time);
         finalColor += bip1(uv, c+p) * vec3(1,1,1);
         p = 50.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
-        finalColor += bip2(uv,c+p) * red;
+        // finalColor += bip2(uv,c+p) * red;
         finalColor += bip1_lygia(uv, c) * green1;
 
         finalColor += ripple_circle(uv) * green2;
@@ -693,17 +698,89 @@ vec3 ripple_circle()
     return vec3(circle(new_st, 0.15, width));
 }
 
+float flip_flop = 1.0;
+vec4 filled_circle()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    // vec2 radius = vec2(1000.0) * sin(u_time);
+    vec2 radius = vec2(1000.0);
+    // float width = 0.15 + (mod(u_time/2.00, 0.15));
+    // float width = 0.01;
+    float width = 0.01;
+    float rate = sin(u_time * 4.00);
+
+    gl_FragColor += digits(st, rate);
+    // if(flip_flop == 1.00 && (rate  < 0.00) )
+    // {
+    //     flip_flop = 0.00;
+    //     width = 0.15;
+    // }
+    // else
+    // {
+    //     width = 0.01;
+    //     flip_flop = 1.00;
+    // }
+    // float width = 0.30;
+    // Circle relative to center
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+
+    float sdf = circle(new_st, 0.15, width);
+
+    float filled = fill(sdf, 0.5);
+
+    // return vec4(vec3(circle(new_st, 0.15, width)), 1.0);
+    return vec4(vec3(filled), 1.0);
+}
+
+vec4 filled_circle_sdf()
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 _center = u_resolution.xy/2.0;
+    // vec2 radius = vec2(1000.0) * sin(u_time);
+    vec2 radius = vec2(50.0);
+    // float width = 0.15 + (mod(u_time/2.00, 0.15));
+    // float width = 0.01;
+    float width = 0.01;
+    float rate = sin(u_time * 16.00);
+
+    gl_FragColor += digits(st, rate);
+    vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
+    float sdf = circleSDF(new_st);
+    float filled = 1.00 * sdf;
+    filled = stroke(sdf, 0.5, 0.1);
+    if(flip_flop == 1.00 && (rate  < 0.00) )
+    {
+        flip_flop = 0.00;
+        width = 0.15;
+        filled += fill(sdf, 0.4);
+    }
+    else
+    {
+        width = 0.01;
+        flip_flop = 1.00;
+        filled = 1.00 * filled;
+    }
+    // Circle relative to center
+
+
+    return vec4(vec3(filled), 1.0);
+}
+
 void main()
 {
     vec4 outputVec = vec4(0.5);
     vec2 st = gl_FragCoord.xy/u_resolution;
     
     vec2 pos = vec2(0.5,0.5);
+    
     float x_offset = 0.8;
     float y_offset = 0.5;
     
-    // vec4 t = ripple_circle();
-    mainImage(outputVec, gl_FragCoord.xy);
+    vec4 t = filled_circle_sdf();
+    // mainImage(outputVec, gl_FragCoord.xy);
 
-    gl_FragColor = outputVec;
+    gl_FragColor += t;
+    // gl_FragColor += digits(st, 43.0);
+    // gl_FragColor += char(st, CHAR_K);
 }
