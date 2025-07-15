@@ -510,6 +510,38 @@ float bip2(vec2 uv, vec2 center)
         + smoothstep( (8.0,R-20.0),R,r)-SMOOTH(R,r);
 }
 
+//Two sdf circles. Inner circle is drawn with fill and second one is drawn with stroke.
+//The inner circle "blinks" really fast at a certain rate
+float bip2_lygia(vec2 uv, vec2 center)
+{
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    // vec2 radius = vec2(1000.0) * sin(u_time);
+    vec2 radius = vec2(50.0);
+    // float width = 0.15 + (mod(u_time/2.00, 0.15));
+    // float width = 0.01;
+    float width = 0.01;
+    // float rate = sin(u_time * 16.00);
+    float rate = mod(u_time, 0.2);
+
+    gl_FragColor += digits(st, rate);
+    vec2 new_st = smoothstep(center-radius, center+radius, gl_FragCoord.xy);
+    float sdf = circleSDF(new_st);
+    float filled = 1.00 * sdf;
+    filled = stroke(sdf, 0.5, 0.1);
+    // if(rate < 0.00)
+    if(rate < 0.1)
+    {
+        width = 0.15;
+        filled += fill(sdf, 0.4);
+    }
+    else
+    {
+        width = 0.01;
+        filled = 1.00 * filled;
+    }
+    return (filled);
+}
+
 float bip1_lygia(vec2 uv, vec2 center)
 {
     float radius = 100.00;
@@ -545,7 +577,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         p = 130.0*MOV(0.9,-1.1,1.7,0.8,-2.0+sin(0.1*u_time)+0.15*u_time);
         finalColor += bip1(uv, c+p) * vec3(1,1,1);
         p = 50.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
-        // finalColor += bip2(uv,c+p) * red;
+        finalColor += bip2_lygia(uv,c+p) * green1;
+        p = 10.0*MOV(1.54,1.7,1.37,1.8,sin(0.1*u_time+7.0)+0.2*u_time);
+        finalColor += bip2(uv,c+p) * red;
         finalColor += bip1_lygia(uv, c) * green1;
 
         finalColor += ripple_circle(uv) * green2;
@@ -698,7 +732,6 @@ vec3 ripple_circle()
     return vec3(circle(new_st, 0.15, width));
 }
 
-float flip_flop = 1.0;
 vec4 filled_circle()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -711,16 +744,6 @@ vec4 filled_circle()
     float rate = sin(u_time * 4.00);
 
     gl_FragColor += digits(st, rate);
-    // if(flip_flop == 1.00 && (rate  < 0.00) )
-    // {
-    //     flip_flop = 0.00;
-    //     width = 0.15;
-    // }
-    // else
-    // {
-    //     width = 0.01;
-    //     flip_flop = 1.00;
-    // }
     // float width = 0.30;
     // Circle relative to center
     vec2 new_st = smoothstep(_center-radius, _center+radius, gl_FragCoord.xy);
@@ -737,10 +760,7 @@ vec4 filled_circle_sdf()
 {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
     vec2 _center = u_resolution.xy/2.0;
-    // vec2 radius = vec2(1000.0) * sin(u_time);
     vec2 radius = vec2(50.0);
-    // float width = 0.15 + (mod(u_time/2.00, 0.15));
-    // float width = 0.01;
     float width = 0.01;
     float rate = sin(u_time * 16.00);
 
@@ -749,20 +769,17 @@ vec4 filled_circle_sdf()
     float sdf = circleSDF(new_st);
     float filled = 1.00 * sdf;
     filled = stroke(sdf, 0.5, 0.1);
-    if(flip_flop == 1.00 && (rate  < 0.00) )
+    if(rate < 0.1)
     {
-        flip_flop = 0.00;
         width = 0.15;
         filled += fill(sdf, 0.4);
     }
     else
     {
         width = 0.01;
-        flip_flop = 1.00;
         filled = 1.00 * filled;
     }
     // Circle relative to center
-
 
     return vec4(vec3(filled), 1.0);
 }
@@ -778,9 +795,8 @@ void main()
     float y_offset = 0.5;
     
     vec4 t = filled_circle_sdf();
-    // mainImage(outputVec, gl_FragCoord.xy);
+    mainImage(outputVec, gl_FragCoord.xy);
 
-    gl_FragColor += t;
-    // gl_FragColor += digits(st, 43.0);
-    // gl_FragColor += char(st, CHAR_K);
+    // gl_FragColor += t;
+    gl_FragColor += outputVec;
 }
