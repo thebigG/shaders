@@ -1,8 +1,8 @@
 # shaders
 This repo is meant to be a source of reference for shaders examples to help guide future shader efforts (e.g. games.). Below is a list of some examples that stand out that might be helpful shader reference/documentation for the future.
 - [HUD](shaders/examples/bin/data/shadersGL2/hud_lygia.frag)
-This HUD is a replication of this [HUD](https://www.shadertoy.com/view/4s2SRt) with some modifications and it drawn using [lygia](https://lygia.xyz/)
-
+This HUD is a replication of this [HUD](https://www.shadertoy.com/view/4s2SRt) with some modifications and it is drawn using [lygia](https://lygia.xyz/)
+![lygia hud](images/lygia_hud.png)
 
 ## Building OpenFrameworks
 ```
