@@ -6,6 +6,7 @@ precision mediump float;
 
 uniform vec2 u_resolution;
 uniform float u_time;
+#include "../../../../../lygia/draw/circle.glsl"
 
 float circle(in vec2 _st, in float _radius){
     vec2 l = _st-vec2(0.5);
@@ -23,7 +24,7 @@ void main() {
 
     // Now we have 9 spaces that go from 0-1
 
-    color = vec3(st,0.
+    color = vec3(st,0.0);
     color = vec3(circle(st,0.5));
 
 	gl_FragColor = vec4(color,1.0);
