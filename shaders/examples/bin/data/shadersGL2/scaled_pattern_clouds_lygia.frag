@@ -8,7 +8,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 #include "../../../../../lygia/sdf/circleSDF.glsl"
 #include "../../../../../lygia/draw/stroke.glsl"
-
+#include "../../../../../lygia/draw/fill.glsl"
 // #define SKY_BLUE vec3(0.0,0.0,1.0)
 
 #define SKY_BLUE covertRGB(vec3(48.00, 141.00, 255))
@@ -21,25 +21,32 @@ vec3 covertRGB(in vec3 rgb)
 void main() {
 	 vec2 st = gl_FragCoord.xy/u_resolution;
    vec3 color = SKY_BLUE;
-
+  
    // st *= 2.0;      // Scale up the space by 3
-   st.x *= 2.0;      // Scale up the space by 3
+   st *= 2.0;      // Scale up the space by 3
+   vec2  scaled_st = st;
    if (st.x > 1.00)
    {
-     color = vec3(1.00,0.0,0.0);
+     // color = vec3(1.00,0.0,0.0);
    }                  
    st = fract(st); // Wrap around 1.0
 
     // Now we have 9 spaces that go from 0-1
     float circle_sdf = circleSDF(st);
     
-    circle_sdf = stroke(circle_sdf, 1.00, 0.1);
+    // circle_sdf = stroke(circle_sdf, 1.00, 0.1);
+    if (scaled_st.x > 1.00 && scaled_st.y>1.00)
+    {
+      // color = vec3(1.00,0.0,0.0);
+      // color *= circle_sdf;
+      circle_sdf = fill(circle_sdf, 0.7);
+    }               
+    else
+    {
+      circle_sdf = stroke(circle_sdf, 0.5, 0.1);    
+    }
 
-    // circle_sdf = 1.00 - circle_sdf;
-
-    // color = vec3(st,0.0);
-    // color = vec3(circle(circle_sdf,1.0));
+     // circle_sdf = fill(circle_sdf, 0.5);
     color += vec3(circle_sdf);
-	  
     gl_FragColor = vec4(color,1.0);
 }
