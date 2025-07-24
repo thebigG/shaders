@@ -7,7 +7,7 @@ This HUD is a replication of this [HUD](https://www.shadertoy.com/view/4s2SRt) w
 This shader is a simple company logo of a computer company that demos an easy distance field. It does not use lygia.
 ![Computer Company Logo](images/company_logo.png)
 
-This shader is a simple example of tiles and it is drawn using [lygia](https://lygia.xyz/)
+- This ![flowers shader](shaders/examples/bin/data/shadersGL2/scaled_pattern_clouds_lygia.frag) is a simple example of tiles and it is drawn using [lygia](https://lygia.xyz/)
 ![flowers](images/flowers_shader.png)
 
 ## Building OpenFrameworks
