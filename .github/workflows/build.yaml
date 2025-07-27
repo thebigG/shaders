@@ -18,5 +18,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential && sudo apt-get install clang-format 
 
       - name: Run Make
-        run: make check-format
+        run: make check_format
 
