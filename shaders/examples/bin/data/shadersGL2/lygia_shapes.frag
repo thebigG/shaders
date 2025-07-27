@@ -2,9 +2,9 @@
 precision mediump float;
 #endif
 
-uniform vec2        u_resolution;
+uniform vec2 u_resolution;
 // uniform vec2        u_mouse;
-uniform float       u_time;
+uniform float u_time;
 
 // By default all 2D shapes and space functions asume
 // the center is at vec2(0.5, 0.5), this can be overloaded
@@ -35,8 +35,6 @@ uniform float       u_time;
 #include "../../../../../lygia/sdf/vesicaSDF.glsl"
 #include "../../../../../lygia/sdf/rhombSDF.glsl"
 
-
-
 #include "../../../../../lygia/space/ratio.glsl"
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
@@ -49,12 +47,12 @@ uniform float       u_time;
 //     // Option 1
 //     st = ratio(st, u_resolution.xy);
 
-//     // // Option 2 
+//     // // Option 2
 //     // st = center(st);
 //     // st = aspect(st, u_resolution.xy);
 //     // st = uncenter(st);
 
-//     float cols = 4.0; 
+//     float cols = 4.0;
 //     st *= cols;
 //     vec2 st_i = floor(st);
 //     vec2 st_f = fract(st);
@@ -64,7 +62,7 @@ uniform float       u_time;
 
 //     float sdf = 0.0;
 //     float index = ( st_i.x + (cols-st_i.y - 1.0) * cols);
-    
+
 //     if (index == 0.0)
 //         sdf = circleSDF( st_f );
 //     else if (index == 1.0)
@@ -97,25 +95,24 @@ uniform float       u_time;
 //              = 1.0;
 
 //     color.rgb += fill(sdf, 0.5);
-    
+
 //     gl_FragColor = color;
 // }
-
-
 
 #include "../../../../../lygia/space/ratio.glsl"
 #include "../../../../../lygia/math/decimate.glsl"
 #include "../../../../../lygia/draw/circle.glsl"
 
-void main(void) {
+void main(void)
+{
     vec3 color = vec3(0.0);
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec2 st    = gl_FragCoord.xy / u_resolution.xy;
 
     st.x += 0.5;
 
-    color = vec3(st.x,st.y,abs(sin(u_time)));
+    color = vec3(st.x, st.y, abs(sin(u_time)));
     color = decimate(color, 20.);
     color += circle(st, 0.1, 0.01);
-    
+
     gl_FragColor = vec4(color, 1.0);
 }
