@@ -4,6 +4,8 @@
 #include "../../../../../lygia/space/sqTile.glsl"
 
 #include "../../../../../lygia/space/rotate.glsl"
+#include "../../../../../lygia/math/rotate2d.glsl"
+
 #ifdef GL_ES
 precision mediump float;
 #endif
@@ -16,7 +18,7 @@ uniform float u_time;
 vec2 rotate2D_lygia(vec2 _st, float _angle)
 {
     _st -= 0.5;
-    _st = rotate(_st, _angle) * _st;
+    _st = rotate2d(_angle) * _st;
     _st += 0.5;
     return _st;
 }
@@ -30,6 +32,7 @@ vec2 tile(vec2 _st, float _zoom)
 vec2 rotate2D(vec2 _st, float _angle)
 {
     _st -= 0.5;
+    //This function is not quite the same as the rotate in lygia. The sign on the sin is flipped..
     _st = mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle)) * _st;
     _st += 0.5;
     return _st;
