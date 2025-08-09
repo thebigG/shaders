@@ -5,8 +5,8 @@ void ofApp::setup(){
 	if(ofIsGLProgrammableRenderer()){
 		// shader.load("shadersGL3/shader");
 	}else{
-		shader.load("shadersGL2/hud_lygia");
-	}
+		shader.load("shadersGL2/2d_random_time");	
+  }
 }
 
 //--------------------------------------------------------------
