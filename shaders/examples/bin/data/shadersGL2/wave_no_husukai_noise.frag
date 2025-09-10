@@ -10,21 +10,18 @@ precision mediump float;
 // uniform sampler2D     u_tex0;// Use this when using ofDisableArbTex()
 // Use sampler2DRect when we want normalized (0.0-1.0) coords.
 uniform sampler2DRect u_tex0;
-uniform vec2 u_tex0Resolution;
+uniform vec2          u_tex0Resolution;
 
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform vec2  u_resolution;
+uniform vec2  u_mouse;
 uniform float u_time;
 
 // Based on Morgan
 // https://www.shadertoy.com/view/4dS3Wd
-float random (in vec2 st) {
-    return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
-}
+float random(in vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123); }
 
-float noise (in vec2 st) {
+float noise(in vec2 st)
+{
     vec2 i = floor(st);
     vec2 f = fract(st);
 
@@ -36,24 +33,33 @@ float noise (in vec2 st) {
 
     vec2 u = f * f * (3.0 - 2.0 * f);
 
-    return mix(a, b, u.x) +
-            (c - a)* u.y * (1.0 - u.x) +
-            (d - b) * u.x * u.y;
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
 }
 
-void main () {
-    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+void main()
+{
+    // normalize 0–1
+    vec2 st = gl_TexCoord[0].st / u_tex0Resolution;
 
-    float scale = 2.0;
+    // do stuff in 0–1 space (e.g., flip y, wrap, etc.)
+    // ...
+
+    // convert back to pixel coords for sampler2DRect
+    // vec2 pixelCoords = st * u_tex0Resolution;
+    // vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    float scale  = 2.0;
     float offset = 0.5;
 
-    float angle = noise( st + u_time * 0.1 )*PI;
+    float angle  = noise(st + u_time * 0.1) * PI;
     float radius = offset;
 
     st *= scale;
-    st += radius * vec2(cos(angle),sin(angle));
+    st += radius * vec2(cos(angle), sin(angle));
 
-    vec4 color = texture2D(u_tex0,st);
+    vec2 pixelCoords = st * u_tex0Resolution;
 
-    // gl_FragColor = color;
+    vec4 color = texture2DRect(u_tex0, pixelCoords);
+
+    gl_FragColor = color;
 }

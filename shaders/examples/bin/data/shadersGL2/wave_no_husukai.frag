@@ -19,7 +19,7 @@ void main()
     vec2 st    = gl_FragCoord.xy / u_resolution.xy;
     vec4 color = vec4(st.x, st.y, 0.0, 1.0);
 
-    color = texture2D(u_tex0, st);
+    color = texture2DRect(u_tex0, gl_FragCoord.xy);
 
     gl_FragColor = color;
     // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);

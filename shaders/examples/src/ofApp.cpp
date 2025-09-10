@@ -6,7 +6,7 @@ void ofApp::setup(){
 	if(ofIsGLProgrammableRenderer()){
 		// shader.load("shadersGL3/shader");
 	}else{
-		shader.load("shadersGL2/wave_no_husukai");	
+		shader.load("shadersGL2/wave_no_husukai_noise");	
   }
 
 //   img.load("/home/lgomez/Downloads/1343746.jpg"); // Load your image her
@@ -38,8 +38,9 @@ void ofApp::draw(){
     //we have to transform the coords to what the shader is expecting which is 0,0 in the center and y axis flipped. 
     shader.setUniform2f("u_mouse", mouseX , mouseY );
     shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
+    shader.setUniform2f("u_tex0Resolution", img.getWidth(), img.getHeight());
     shader.setUniformTexture("u_tex0", img.getTexture(), 0);
-    cout << "w=" << img.getWidth() << " h=" << img.getHeight() << endl;
+    // cout << "w=" << img.getWidth() << " h=" << img.getHeight() << endl;
 	// ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
     img.draw(0, 0);
 	
@@ -93,3 +94,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
