@@ -6,7 +6,7 @@ void ofApp::setup(){
 	if(ofIsGLProgrammableRenderer()){
 		// shader.load("shadersGL3/shader");
 	}else{
-		shader.load("shadersGL2/wave_no_husukai_noise");	
+		shader.load("shadersGL2/wave_no_husukai_noise_lygia");	
   }
 
 //   img.load("/home/lgomez/Downloads/1343746.jpg"); // Load your image her
