@@ -11,6 +11,12 @@ This shader is a simple company logo of a computer company that demos an easy di
 - This ![flowers shader](shaders/examples/bin/data/shadersGL2/scaled_pattern_clouds_lygia.frag) is a simple example of tiles and it is drawn using [lygia](https://lygia.xyz/)
 ![flowers](images/flowers_shader.png)
 
+- This ![husukai_no_wave shader](shaders/examples/bin/data/shadersGL2/texture_invert_colors.frag) is a simple example of inverting colors in textures.
+Inverted  
+![husukai_no_wave_inverted](images/husukai_no_wave_inverted.png)
+Original
+![husukai_no_wave](images/husukai_no_wave.png)
+
 ## Building OpenFrameworks
 ```
 git submodule update --init --recursive
