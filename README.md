@@ -6,7 +6,7 @@ This repo is meant to be a source of reference for shaders examples to help guid
 1. [HUD](#HUD)
 2. [Company Logo](#company_logo)
 3. [Flowers](#flowers)
-4. [husukai_no_wave](#husukai_no_wave)
+4. [Husukai No Wave](#husukai_no_wave)
 
 ## HUD <a name="HUD"></a>
 - [HUD](shaders/examples/bin/data/shadersGL2/hud_lygia.frag)
