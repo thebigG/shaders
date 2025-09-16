@@ -4,9 +4,9 @@ This repo is meant to be a source of reference for shaders examples to help guid
 
 # Some Examples
 1. [HUD](#HUD)
-2. [Company Logo](#company_logo)
-3. [Flowers](#flowers)
-4. [Husukai No Wave](#husukai_no_wave)
+2. [Shapes](#company_logo)
+3. [Tiles](#flowers)
+4. [Invert Colors](#husukai_no_wave)
 
 ## HUD <a name="HUD"></a>
 - [HUD](shaders/examples/bin/data/shadersGL2/hud_lygia.frag)
